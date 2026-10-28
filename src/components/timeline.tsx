@@ -4,7 +4,7 @@ import { Linking, Pressable, ScrollView, View } from 'react-native';
 import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
 import { categoryStyle, colors, radius, space } from '@/theme';
-import { durationLabel, flightDuration, localTime, nowAndNext, shortDate, tripPhase } from '@/lib/time';
+import { durationLabel, flightDuration, localTime, nowAndNext, shortDate, tripPhase, zonedIso } from '@/lib/time';
 import { openNavigation, passKey } from '@/lib/trip';
 import { useLedger } from '@/store/ledger';
 import type { Day, Flight, Stop, Trip } from '@/types/trip';
@@ -52,13 +52,14 @@ export function NowNextHud({ trip }: { trip: Trip }) {
 
   const nn = nowAndNext(trip, now);
   const upcoming = phase === 'upcoming';
-  const countdown = upcoming && nn.next ? durationLabel(Date.parse(trip.flights[0]?.depart ?? nn.next.start!) - now.getTime()) : undefined;
+  const target = trip.flights[0]?.depart ?? nn.next?.start ?? zonedIso(trip.startDate, '00:00', trip.timezone);
+  const countdown = upcoming ? durationLabel(Date.parse(target) - now.getTime()) : undefined;
 
   return (
     <Card style={{ borderColor: colors.gold, backgroundColor: '#14120B' }}>
       <Row style={{ justifyContent: 'space-between' }}>
         <Txt v="tiny" color={colors.gold}>
-          {upcoming ? 'Countdown to takeoff' : nn.now ? 'Happening now' : 'Up next'}
+          {upcoming ? (trip.flights.length ? 'Countdown to takeoff' : 'Countdown to your trip') : nn.now ? 'Happening now' : 'Up next'}
         </Txt>
         <Row gap={6}>
           <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: upcoming ? colors.gold : colors.emerald }} />

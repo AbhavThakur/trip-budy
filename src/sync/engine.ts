@@ -5,6 +5,7 @@ import { AppState } from 'react-native';
 
 import { localFile, remotePathFor } from '@/lib/files';
 import { cloudConfigured, DOCS_BUCKET, ensureSession, supabase } from '@/lib/supabase';
+import { isOwnVariantTrip } from '@/lib/variant';
 import { useLedger } from '@/store/ledger';
 import { useSession } from '@/store/session';
 import { mergeWithBundle } from '@/lib/trip-merge';
@@ -240,7 +241,7 @@ async function discoverFamilyTrips(force: boolean) {
   const { trips } = useTrips.getState();
   const hidden = useSession.getState().hiddenTrips;
   for (const t of data as { id: string }[]) {
-    if (trips[t.id] || hidden.includes(t.id)) continue;
+    if (trips[t.id] || hidden.includes(t.id) || !isOwnVariantTrip(t.id)) continue;
     const res = await supabase!.rpc('tb_join_trip_by_id', { p_trip_id: t.id, p_key: FAMILY_KEY, p_traveler: null });
     if (!res.error && (res.data as Linked[])?.length) adoptCloudTrip((res.data as Linked[])[0]);
   }

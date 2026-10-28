@@ -7,6 +7,7 @@ import { Screen } from '@/components/screen';
 import { Button, Card, Icon, Row, Txt } from '@/components/ui';
 import { success } from '@/lib/haptics';
 import { normalizeImportedTrip } from '@/lib/new-trip';
+import { variantTripId } from '@/lib/variant';
 import { useTrips } from '@/store/trips';
 import { setMyTraveler } from '@/sync/engine';
 import { colors, radius, space } from '@/theme';
@@ -51,13 +52,13 @@ export default function ImportTrip() {
     }
     const { trip, error: err } = normalizeImportedTrip(raw);
     if (err || !trip) return setError(err ?? 'Could not read that trip.');
-    let id = trip.id;
-    for (let n = 2; trips[id]; n++) id = `${trip.id}-${n}`;
+    let id = variantTripId(trip.id);
+    for (let n = 2; trips[id]; n++) id = variantTripId(`${trip.id}-${n}`);
     const t = { ...trip, id };
     setTrip(t, { source: 'local', version: 0, dirty: false });
     void setMyTraveler(t.id, t.travelers[0].id);
     success();
-    router.dismissAll();
+    if (router.canDismiss()) router.dismissAll();
     router.replace(`/trip/${t.id}`);
   };
 

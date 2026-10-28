@@ -7,6 +7,7 @@ import { Avatar, Button, Card, Icon, Pill, Row, SectionTitle, Txt } from '@/comp
 import { success } from '@/lib/haptics';
 import { addDays, buildTrip, PRESETS, validateNewTrip, type Preset } from '@/lib/new-trip';
 import { shortDate, todayIn } from '@/lib/time';
+import { variantTripId } from '@/lib/variant';
 import { useTrips } from '@/store/trips';
 import { setMyTraveler } from '@/sync/engine';
 import { colors, radius, space } from '@/theme';
@@ -30,7 +31,8 @@ export default function NewTrip() {
   const create = () => {
     setTouched(true);
     if (error) return;
-    const trip = buildTrip(input_);
+    const built = buildTrip(input_);
+    const trip = { ...built, id: variantTripId(built.id) };
     setTrip(trip, { source: 'local', version: 0, dirty: false });
     void setMyTraveler(trip.id, trip.travelers[0].id);
     success();

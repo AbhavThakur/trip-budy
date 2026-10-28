@@ -32,22 +32,22 @@ The Supabase MCP in VS Code (`mcp.json` → `supabase`) also works once you sign
 
 ## OTA vs new APK — which to use
 
-| Change | Ship with |
-|---|---|
-| Screens, logic, trip data, copy, fixes, new reminders | `npm run ship` (OTA, mandatory install screen) |
-| New native library, permission, icon, app name, `version` bump | `npm run build:apk` and reinstall |
+| Change                                                         | Ship with                                      |
+| -------------------------------------------------------------- | ---------------------------------------------- |
+| Screens, logic, trip data, copy, fixes, new reminders          | `npm run ship` (OTA, mandatory install screen) |
+| New native library, permission, icon, app name, `version` bump | `npm run build:apk` and reinstall              |
 
 An OTA only swaps the JavaScript bundle. It never reinstalls the app, so permissions, the vault files (`Documents/vault`), offline map packs and all saved data (SQLite key-value store) are untouched — verified on device (permissions + expenses + attached documents identical before/after).
 
 ## Two apps: real vs test
 
-| | Real app | Test app |
-|---|---|---|
-| Name on phone | Trip Buddy | Trip Buddy (Test) — red "TEST" label on home |
-| Package | `com.tripbuddy.family` | `com.tripbuddy.family.test` (installs side by side) |
-| Cloud trip id | `vietnam-2026` | `vietnam-2026-test` |
-| OTA channel | `production` (`npm run ship`) | `test` (`npm run ship:test`) |
-| Build | `npm run build:apk` | `npm run build:apk:test` |
+|               | Real app                      | Test app                                            |
+| ------------- | ----------------------------- | --------------------------------------------------- |
+| Name on phone | Trip Buddy                    | Trip Buddy (Test) — red "TEST" label on home        |
+| Package       | `com.tripbuddy.family`        | `com.tripbuddy.family.test` (installs side by side) |
+| Cloud trip id | `vietnam-2026`                | `vietnam-2026-test`                                 |
+| OTA channel   | `production` (`npm run ship`) | `test` (`npm run ship:test`)                        |
+| Build         | `npm run build:apk`           | `npm run build:apk:test`                            |
 
 Same real ticket data in both, but test sharing/expenses/uploads never touch the family's real trip. Try every change on the Test app first, then `npm run ship`.
 
@@ -66,6 +66,8 @@ Any JS / data change (itinerary, phrases, fixes) goes out over the air:
 ```bash
 npm run ship -- "Updated cruise pickup time"
 ```
+
+npx eas-cli build -p android --profile preview
 
 Phones download it in the background and show **“Trip update ready”**; one tap restarts into the new version (Settings → App updates shows the running bundle).
 Only native changes (new native library, permissions, app.json plugins) or bumping `version` in app.json need a new APK.

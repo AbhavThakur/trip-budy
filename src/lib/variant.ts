@@ -7,3 +7,6 @@ export const isTestApp = appVariant === 'test';
 export const variantTripId = (id: string) => (isTestApp && !id.endsWith('-test') ? `${id}-test` : id);
 
 export const joinLink = (code: string) => `${isTestApp ? 'tripbuddytest' : 'tripbuddy'}://join?code=${code}`;
+
+/** The test and real apps share one backend; each only sees its own trips. */
+export const isOwnVariantTrip = (id: string) => id.endsWith('-test') === isTestApp;
