@@ -41,3 +41,11 @@ example
 # generated native folders
 /ios
 /android
+
+# secrets
+.env
+
+# private trip data (passport / visa numbers) — regenerate with `npm run import-trips`
+scripts/seed/private.local.mjs
+src/data/trips/vietnam-2026.json
+dist-apk/

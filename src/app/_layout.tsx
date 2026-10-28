@@ -1,18 +1,48 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { UpdateBanner } from '@/components/update-banner';
+import { startReminders } from '@/lib/notify';
+import { useTrips } from '@/store/trips';
+import { startSync } from '@/sync/engine';
+import { colors } from '@/theme';
 
-SplashScreen.preventAutoHideAsync();
+export { ErrorBoundary } from 'expo-router';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+void SplashScreen.preventAutoHideAsync();
+
+const theme = {
+  ...DarkTheme,
+  colors: { ...DarkTheme.colors, background: colors.bg, card: colors.bg, border: colors.border, primary: colors.gold, text: colors.text },
+};
+
+export default function RootLayout() {
+  useEffect(() => {
+    useTrips.getState().reseedFromBundle();
+    void SplashScreen.hideAsync();
+    const stopSync = startSync();
+    const stopReminders = startReminders();
+    return () => {
+      stopSync();
+      stopReminders();
+    };
+  }, []);
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <ThemeProvider value={theme}>
+        <StatusBar style="light" />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'slide_from_right' }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="settings" />
+          <Stack.Screen name="join" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="trip/[id]" />
+        </Stack>
+        <UpdateBanner />
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -1,0 +1,493 @@
+{
+  "id": "chikmagalur-2026",
+  "title": "Chikmagalur Coffee & Cloud Peaks",
+  "destination": "Chikmagalur, Karnataka, India",
+  "flag": "🇮🇳",
+  "status": "past",
+  "category": "domestic",
+  "dates": "Sep 12 – 14, 2026",
+  "daysCount": 3,
+  "travelers": "2–3 Travelers",
+  "heroGradient": "from-emerald-950 via-teal-900 to-slate-950",
+  "badge": "Completed • Western Ghats",
+  "accentColor": "#10b981",
+  "url": "chikmagalur_trip_architect.html",
+  "summary": "3-day weekend escape across lush coffee plantations, rugged 4x4 jeep trails to roaring waterfalls, highest peak trekking at Mullayanagiri (1,930m), and scenic ridge cruising on 125cc scooties.",
+  "basecamp": {
+    "name": "Tresca A Luxury Hotel",
+    "location": "RG Road, Vijayapura (Opp. Renukacharya Kalyana Mantapa)",
+    "proximity": "850m from KSRTC Main Bus Stand (~2 min auto)",
+    "checkIn": "12:00 PM",
+    "checkOut": "11:00 AM",
+    "arrivalStrategy": "9:30 AM arrival: Drop bags at 24-hr cloakroom, freshen up in lobby washroom, and head out immediately for breakfast and sightseeing without carrying luggage."
+  },
+  "transit": {
+    "outbound": {
+      "title": "Going Journey: Bengaluru ➔ Chikmagalur",
+      "mode": "bus",
+      "modeLabel": "Overnight AC Sleeper Bus",
+      "operator": "KSRTC Airavat Club Class Multi-Axle",
+      "vehicleNo": "KA-01-F-9920",
+      "pnr": "KSRTC-BLR-892",
+      "seats": "Lower Berths 12 & 13",
+      "date": "Fri, Sep 11, 2026",
+      "from": "Bengaluru (Majestic / Silk Board)",
+      "deptTime": "11:00 PM (Sep 11)",
+      "to": "Chikmagalur (KSRTC Main Stand)",
+      "arrTime": "06:30 AM / 09:30 AM (Sep 12)",
+      "duration": "5h 30m – 6h 30m (245 km)",
+      "notes": "Highway food stop at Paakashala Yediyur on NH 75. 2-min auto from bus stand to Tresca Hotel."
+    },
+    "returnTrip": {
+      "title": "Return Journey: Chikmagalur ➔ Bengaluru",
+      "mode": "bus",
+      "modeLabel": "Overnight AC Sleeper Bus",
+      "operator": "KSRTC Airavat Multi-Axle",
+      "vehicleNo": "KA-18-F-4411",
+      "pnr": "KSRTC-RET-441",
+      "seats": "Upper Berths 18 & 19",
+      "date": "Mon, Sep 14, 2026",
+      "from": "Chikmagalur (KSRTC Main Stand)",
+      "deptTime": "10:30 PM (Sep 14)",
+      "to": "Bengaluru (Majestic / Silk Board)",
+      "arrTime": "05:00 AM (Tue Sep 15)",
+      "duration": "5h 30m (245 km via Hassan)",
+      "notes": "Settle scooty deposit by 08:30 PM, dinner on RG Road, board 10:30 PM sleeper. Coffee packages in cabin."
+    }
+  },
+  "quickBookings": [
+    {
+      "id": "ksrtc-blr-ckm",
+      "title": "KSRTC Airavat Club Class AC Sleeper (BLR ➔ Chikmagalur)",
+      "category": "transit",
+      "icon": "bus",
+      "date": "Fri, Sep 11, 11:00 PM (23:00 hrs) • Departs Majestic / Silk Board",
+      "operator": "KSRTC Airavat Club Class Multi-Axle",
+      "pickup": "Bengaluru (Majestic Terminal 1 / Silk Board)",
+      "drop": "Chikmagalur KSRTC Main Bus Stand (Arr. 06:30 AM / 09:30 AM)",
+      "seats": "Lower Berths 12 & 13",
+      "price": "Confirmed • PNR: KSRTC-BLR-892",
+      "primaryUrl": "https://www.ksrtc.in",
+      "primaryLabel": "Official KSRTC Portal",
+      "pnrPlaceholder": "KSRTC-BLR-892",
+      "querySummary": "Bengaluru ➔ Chikmagalur • Sep 11 23:00 • Berths 12 & 13 • Airavat Multi-Axle"
+    },
+    {
+      "id": "stay-tresca",
+      "title": "Tresca A Luxury Hotel, Chikmagalur (2 Nights) [BASECAMP]",
+      "category": "stay",
+      "icon": "hotel",
+      "date": "Check-in: Sep 12, 12:00 PM (Early bag drop 09:30 AM) • Check-out: Sep 14, 11:00 AM",
+      "operator": "Tresca Hotel Concierge (Phone: +91 8262 235555)",
+      "pickup": "RG Road, Vijayapura, Chikmagalur (850m from KSRTC Stand)",
+      "drop": "Deluxe Air-Conditioned Suite (2-3 Guests)",
+      "seats": "2–3 Travelers Confirmed",
+      "price": "Confirmed Reservation",
+      "primaryUrl": "https://www.google.com/maps/search/?api=1&query=Tresca+A+Luxury+Hotel+Chikmagalur",
+      "primaryLabel": "Google Maps (Tresca Hotel)",
+      "pnrPlaceholder": "TRS-CKM-2026",
+      "querySummary": "Tresca A Luxury Hotel • Sep 12 – 14 • RG Road Vijayapura • 850m to bus stand"
+    },
+    {
+      "id": "scooty-rental-ckm",
+      "title": "Chikmagalur 125cc Scooty Rental (Plantation & Peak Cruising)",
+      "category": "transit",
+      "icon": "motorcycle",
+      "date": "Sep 12, 10:00 AM ➔ Sep 14, 08:30 PM (Return before dinner)",
+      "operator": "Chikmagalur Bike & Scooty Rentals",
+      "pickup": "Near KSRTC Main Bus Stand, Chikmagalur",
+      "drop": "Mullayanagiri, Baba Budangiri & Z-Point Circuit",
+      "seats": "125cc Scooty with 2 ISI Helmets",
+      "price": "₹600/day + ₹1,000 Refundable Deposit",
+      "primaryUrl": "https://www.google.com/maps/search/?api=1&query=bike+rental+chikmagalur",
+      "primaryLabel": "Find Rental on Maps",
+      "pnrPlaceholder": "RENTAL-CKM-SCOOTY",
+      "querySummary": "125cc Scooty • 3 Days autonomous mountain cruising • Settle by 08:30 PM Sep 14"
+    },
+    {
+      "id": "ksrtc-ckm-blr",
+      "title": "KSRTC Airavat Return AC Sleeper (Chikmagalur ➔ BLR)",
+      "category": "transit",
+      "icon": "bus",
+      "date": "Mon, Sep 14, 10:30 PM (22:30 hrs) • Arrives BLR 05:00 AM Tue",
+      "operator": "KSRTC Airavat Multi-Axle",
+      "pickup": "Chikmagalur KSRTC Main Bus Stand",
+      "drop": "Bengaluru (Majestic / Silk Board)",
+      "seats": "Upper Berths 18 & 19",
+      "price": "Confirmed • PNR: KSRTC-RET-441",
+      "primaryUrl": "https://www.ksrtc.in",
+      "primaryLabel": "Official KSRTC Portal",
+      "pnrPlaceholder": "KSRTC-RET-441",
+      "querySummary": "Chikmagalur ➔ Bengaluru • Sep 14 22:30 • Berths 18 & 19 • 5h 30m via Hassan"
+    }
+  ],
+  "features": [
+    {
+      "icon": "route",
+      "label": "Going & Return Transit Matrix"
+    },
+    {
+      "icon": "calculator",
+      "label": "Custom Split Budget"
+    },
+    {
+      "icon": "map-pin",
+      "label": "Offline Maps & Elevation"
+    },
+    {
+      "icon": "check-square",
+      "label": "Mountain Packing Checklist"
+    }
+  ],
+  "budget": {
+    "total": 24800,
+    "currency": "INR",
+    "paxCount": 2,
+    "categories": [
+      {
+        "name": "Hotels & Stays (Tresca 2 Nights)",
+        "amount": 7600,
+        "icon": "hotel"
+      },
+      {
+        "name": "Transit & Rentals (KSRTC + 4x4 Jeep + Scooty)",
+        "amount": 9200,
+        "icon": "bus"
+      },
+      {
+        "name": "Dining & Malnad Food",
+        "amount": 4500,
+        "icon": "utensils"
+      },
+      {
+        "name": "Entry Tickets & Guide Fees",
+        "amount": 1500,
+        "icon": "ticket"
+      },
+      {
+        "name": "Emergency & Coffee Shopping Buffer",
+        "amount": 2000,
+        "icon": "shield"
+      }
+    ]
+  },
+  "itinerary": [
+    {
+      "day": "Day 1 (Sat Sep 12)",
+      "title": "Arrival, Bag Drop at Tresca, Private Cab to Jhari Falls & Mullayanagiri Sunset",
+      "highlight": "Mullayanagiri Peak (1,930m) & 4x4 Jeep Waterfall Descent",
+      "events": [
+        {
+          "time": "09:30 AM",
+          "title": "Arrival at KSRTC Stand & Bag Drop at Tresca",
+          "desc": "2-min auto to hotel, cloakroom drop, change into hill clothes.",
+          "coords": [
+            13.3182,
+            75.7788
+          ],
+          "category": "Hotel",
+          "color": "pin-rose",
+          "icon": "hotel",
+          "name": "Arrival at KSRTC Stand & Bag Drop at Tresca"
+        },
+        {
+          "time": "10:30 AM",
+          "title": "Breakfast at Vishnu Delicacy & Cab Pickup",
+          "desc": "Authentic Mangalore buns, filter coffee, board private sightseeing cab.",
+          "coords": [
+            13.3195,
+            75.7765
+          ],
+          "category": "Food",
+          "color": "pin-amber",
+          "icon": "utensils",
+          "name": "Breakfast at Vishnu Delicacy & Cab Pickup"
+        },
+        {
+          "time": "12:00 PM",
+          "title": "Jhari (Buttermilk) Falls 4x4 Jeep Off-road",
+          "desc": "Board 4x4 open jeep down bumpy dirt trails to the roaring estate waterfall.",
+          "coords": [
+            13.4116,
+            75.7663
+          ],
+          "category": "Nature",
+          "color": "pin-cyan",
+          "icon": "water",
+          "name": "Jhari (Buttermilk) Falls 4x4 Jeep Off-road"
+        },
+        {
+          "time": "03:30 PM",
+          "title": "Mullayanagiri Peak Ascent (1,930m)",
+          "desc": "Ascend Karnataka's highest peak along windy ridge path.",
+          "coords": [
+            13.3361,
+            75.7631
+          ],
+          "category": "Food",
+          "color": "pin-amber",
+          "icon": "utensils",
+          "name": "Mullayanagiri Peak Ascent (1,930m)"
+        },
+        {
+          "time": "05:30 PM",
+          "title": "Hirekolale Lake Sunset",
+          "desc": "Tranquil artificial lake surrounded by Western Ghats slopes.",
+          "coords": [
+            13.3911,
+            75.7214
+          ],
+          "category": "Peak",
+          "color": "pin-emerald",
+          "icon": "mountain",
+          "name": "Hirekolale Lake Sunset"
+        }
+      ]
+    },
+    {
+      "day": "Day 2 (Sun Sep 13)",
+      "title": "125cc Scooty Pickup, Baba Budangiri & Z-Point Ridge Walk",
+      "highlight": "Ghat Riding & Cloud Walking along Z-Point",
+      "events": [
+        {
+          "time": "09:00 AM",
+          "title": "125cc Scooty Rental Pickup",
+          "desc": "Inspect brakes/tyres, take helmet, deposit ID, fill fuel at Indian Oil.",
+          "coords": [
+            13.3155,
+            75.773
+          ],
+          "category": "Transport",
+          "color": "pin-blue",
+          "icon": "motorcycle",
+          "name": "125cc Scooty Rental Pickup"
+        },
+        {
+          "time": "10:30 AM",
+          "title": "Baba Budangiri Shrine & Caves",
+          "desc": "Ride winding roads through dense green canopy to ancient shrine.",
+          "coords": [
+            13.4241,
+            75.7672
+          ],
+          "category": "Nature",
+          "color": "pin-emerald",
+          "icon": "person-hiking",
+          "name": "Baba Budangiri Shrine & Caves"
+        },
+        {
+          "time": "01:30 PM",
+          "title": "Kemmangundi & Z-Point Ridge Hike",
+          "desc": "Spectacular 3km scenic ridge walk looking down over deep valleys.",
+          "coords": [
+            13.3195,
+            75.7765
+          ],
+          "category": "Food",
+          "color": "pin-amber",
+          "icon": "utensils",
+          "name": "Kemmangundi & Z-Point Ridge Hike"
+        },
+        {
+          "time": "05:30 PM",
+          "title": "Town Caffee Estate Tasting",
+          "desc": "Artisan pour-overs and hot coffee sipping.",
+          "coords": [
+            13.3276,
+            75.7766
+          ],
+          "category": "Culture",
+          "color": "pin-amber",
+          "icon": "mug-hot",
+          "name": "Town Caffee Estate Tasting"
+        }
+      ]
+    },
+    {
+      "day": "Day 3 (Mon Sep 14)",
+      "title": "Belur Hoysala Temple / Aldur Canopy, Coffee Shopping & Night Bus",
+      "highlight": "UNESCO 12th Century Architecture & Fresh Malnad Spices",
+      "events": [
+        {
+          "time": "10:00 AM",
+          "title": "Belur Chennakeshava Temple Visit",
+          "desc": "Marvel at soapstone carvings and Hoysala architectural genius.",
+          "coords": [
+            13.3182,
+            75.7788
+          ],
+          "category": "Hotel",
+          "color": "pin-rose",
+          "icon": "hotel",
+          "name": "Belur Chennakeshava Temple Visit"
+        },
+        {
+          "time": "03:00 PM",
+          "title": "Coffee Board Museum & RG Road Shopping",
+          "desc": "Panduranga Arabica/Robusta coffee powder, green cardamom, black pepper.",
+          "coords": [
+            13.1623,
+            75.8601
+          ],
+          "category": "Heritage",
+          "color": "pin-purple",
+          "icon": "gopuram",
+          "name": "Coffee Board Museum & RG Road Shopping"
+        },
+        {
+          "time": "08:30 PM",
+          "title": "Scooty Return & Dinner",
+          "desc": "Settle scooty deposit, leisurely South Indian dinner at Town Caffee.",
+          "coords": [
+            13.3175,
+            75.7745
+          ],
+          "category": "Shopping",
+          "color": "pin-blue",
+          "icon": "bag-shopping",
+          "name": "Scooty Return & Dinner"
+        },
+        {
+          "time": "10:30 PM",
+          "title": "Board KSRTC AC Sleeper Bus to BLR",
+          "desc": "Board night bus back to Bengaluru (arrives ~05:00 AM Tue).",
+          "coords": [
+            13.3149,
+            75.7722
+          ],
+          "category": "Transport",
+          "color": "pin-blue",
+          "icon": "bus",
+          "name": "Board KSRTC AC Sleeper Bus to BLR"
+        }
+      ]
+    }
+  ],
+  "stays": {
+    "tresca": {
+      "name": "Hotel Tresca (Indira Gandhi Road)",
+      "city": "Chikmagalur",
+      "dates": "Sep 12 – 14, 2026 (2 Nights)",
+      "voucher": "TRESCA-BLR-4019",
+      "address": "Indira Gandhi Road, Joytinagar, Chikmagalur, Karnataka 577101",
+      "phone": "+91 8262 235555",
+      "checkIn": "12:00 PM (Early luggage drop at 09:30 AM cloakroom)",
+      "checkOut": "11:00 AM (Sep 14)",
+      "note": "2-minute auto ride from KSRTC Stand. In-house pure vegetarian dining."
+    }
+  },
+  "checklist": [
+    {
+      "phase": "Trekking & Mountain Gear",
+      "items": [
+        {
+          "id": "chk_leech",
+          "text": "Leech socks for Jhari Falls & rainforest trails",
+          "defaultChecked": true
+        },
+        {
+          "id": "chk_shoes",
+          "text": "Grip trekking shoes / trail runners for Mullayanagiri",
+          "defaultChecked": true
+        },
+        {
+          "id": "chk_poncho",
+          "text": "Rain poncho / windbreaker for mountain summits",
+          "defaultChecked": true
+        },
+        {
+          "id": "chk_flask",
+          "text": "Insulated thermos flask for hot ginger tea / water",
+          "defaultChecked": false
+        }
+      ]
+    },
+    {
+      "phase": "Transit & Documents",
+      "items": [
+        {
+          "id": "chk_pnr_out",
+          "text": "KSRTC Outbound PNR (KSRTC-BLR-892) saved offline",
+          "defaultChecked": true
+        },
+        {
+          "id": "chk_pnr_ret",
+          "text": "KSRTC Return PNR (KSRTC-RET-441) saved offline",
+          "defaultChecked": true
+        },
+        {
+          "id": "chk_dl",
+          "text": "Physical Driver's License for 125cc scooty hire",
+          "defaultChecked": true
+        },
+        {
+          "id": "chk_cash",
+          "text": "Cash (₹4,000) for jeep off-roading & entry tickets",
+          "defaultChecked": true
+        }
+      ]
+    },
+    {
+      "phase": "Health & Estate Shopping",
+      "items": [
+        {
+          "id": "chk_meds",
+          "text": "Motion sickness tablets (Avomine) for ghat curves",
+          "defaultChecked": true
+        },
+        {
+          "id": "chk_odomos",
+          "text": "Odomos mosquito repellent cream",
+          "defaultChecked": true
+        },
+        {
+          "id": "chk_coffee",
+          "text": "Purchase fresh Arabica coffee beans & Malnad green cardamom",
+          "defaultChecked": false
+        }
+      ]
+    }
+  ],
+  "emergency": {
+    "police": "112",
+    "ambulance": "108",
+    "touristSupport": "1800 11 1363",
+    "hospitals": [
+      {
+        "name": "Malnad Hospital & Rotary Blood Bank",
+        "address": "MG Road, Chikmagalur",
+        "phone": "+91 8262 235555",
+        "note": "ICU & 24x7 Casualty"
+      },
+      {
+        "name": "District Government Hospital Chikmagalur",
+        "address": "Mallandur Road, Chikmagalur",
+        "phone": "+91 8262 230211",
+        "note": "Trauma Center"
+      },
+      {
+        "name": "24x7 Apollo Pharmacy (Near Tresca)",
+        "address": "RG Road, 250m walking distance from Tresca Hotel",
+        "phone": "+91 8262 239999",
+        "note": "Open 24 hours"
+      }
+    ]
+  },
+  "coffeeShopping": [
+    {
+      "name": "Coffee Roasters Association",
+      "item": "Single Estate Arabica Peaberry",
+      "location": "Market Road"
+    },
+    {
+      "name": "Malnad Spice Emporium",
+      "item": "Coorg Cinnamon & Green Cardamom",
+      "location": "RG Road"
+    },
+    {
+      "name": "Panduranga Coffee 1938",
+      "item": "Grand Aroma Chicory & Pure Roast",
+      "location": "M.G. Road"
+    }
+  ]
+}

@@ -1,56 +1,81 @@
-# Welcome to your Expo app 👋
+# Trip Buddy 🧭
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Offline-first family travel companion for Android (Expo / React Native).
+Passport-style trip carousel · live "Now & Next" timeline · offline map · shared expense split · document vault · phrasebook with audio · SOS.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Run it
 
 ```bash
-npm run reset-project
+npm install
+cp .env.example .env          # optional: add Supabase URL + anon key for family sync
+npm run import-trips          # regenerate src/data/trips/*.json from seeds
+npx expo prebuild -p android
+npx expo run:android          # dev build on emulator / USB phone
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Release APK for sideloading onto family phones (install once):
 
-### Other setup steps
+```bash
+npm run build:apk
+# → android/app/build/outputs/apk/release/app-release.apk
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Two apps: real vs test
 
-## Learn more
+| | Real app | Test app |
+|---|---|---|
+| Name on phone | Trip Buddy | Trip Buddy (Test) — red "TEST" label on home |
+| Package | `com.tripbuddy.family` | `com.tripbuddy.family.test` (installs side by side) |
+| Cloud trip id | `vietnam-2026` | `vietnam-2026-test` |
+| OTA channel | `production` (`npm run ship`) | `test` (`npm run ship:test`) |
+| Build | `npm run build:apk` | `npm run build:apk:test` |
 
-To learn more about developing your project with Expo, look at the following resources:
+Same real ticket data in both, but test sharing/expenses/uploads never touch the family's real trip. Try every change on the Test app first, then `npm run ship`.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Upload all ticket PDFs at once
 
-## Join the community
+```bash
+npm run upload-docs -- --code <TRIP CODE>       # reads ../ (the Trip folder), mapping in scripts/seed/doc-map.mjs
+```
 
-Join our community of developers creating universal apps.
+Uploads each file once to the private bucket and fills every matching vault slot (the Atlys PDF fills all 5 visas + 5 insurance). Every phone in the trip downloads them for offline use on its next sync.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Shipping changes without reinstalling (OTA)
+
+Any JS / data change (itinerary, phrases, fixes) goes out over the air:
+
+```bash
+npm run ship -- "Updated cruise pickup time"
+```
+
+Phones download it in the background and show **“Trip update ready”**; one tap restarts into the new version (Settings → App updates shows the running bundle).
+Only native changes (new native library, permissions, app.json plugins) or bumping `version` in app.json need a new APK.
+Supabase keys for OTA bundles come from EAS environment variables (`production`), already created from `.env`.
+
+## Private data
+
+Passport / visa / insurance numbers live in `scripts/seed/private.local.mjs` (gitignored) and are merged by `npm run import-trips` into `src/data/trips/vietnam-2026.json` (also gitignored). Keep a backup of the private seed outside the repo.
+
+> The default release build is signed with the debug keystore — fine for sideloading. Use EAS (`npx eas-cli build -p android --profile preview`) or your own keystore for anything wider.
+
+## Family sync setup (one time, ~5 min)
+
+1. Supabase dashboard → **Authentication → Sign In / Providers → enable "Anonymous sign-ins"**.
+2. SQL editor → paste and run [`supabase/schema.sql`](supabase/schema.sql).
+3. Put `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_ANON_KEY` (anon/publishable key, never service_role) in `.env`, rebuild.
+4. Trip lead: **Settings → Share with family** → sends a 6-letter code.
+5. Everyone else: **Home → Join a trip** → enter code → pick their name.
+
+Without step 1–3 the app works fully on one phone ("On this phone" status).
+
+## Checks
+
+```bash
+npm run typecheck && npx expo lint && npm test
+node --env-file=.env scripts/backend-selftest.mjs   # live Supabase: RLS, join, LWW, private storage
+```
+
+## Docs
+
+- [Implementation plan & status](docs/IMPLEMENTATION_PLAN.md)
+- [Agent / contributor rules](AGENTS.md)

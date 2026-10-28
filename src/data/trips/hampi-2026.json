@@ -1,0 +1,737 @@
+{
+  "schemaVersion": 1,
+  "id": "hampi-2026",
+  "title": "Hampi",
+  "subtitle": "Boulders, ruins & the Tungabhadra",
+  "destination": "Hampi, Vijayanagara District, Karnataka, India",
+  "country": "India",
+  "flag": "🇮🇳",
+  "startDate": "2026-10-02",
+  "endDate": "2026-10-04",
+  "timezone": "Asia/Kolkata",
+  "homeTimezone": "Asia/Kolkata",
+  "speechLocale": "kn-IN",
+  "currency": {
+    "code": "INR",
+    "symbol": "₹",
+    "decimals": 2,
+    "inrPerUnit": 1
+  },
+  "cover": {
+    "from": "#78350F",
+    "to": "#111827",
+    "accent": "#FBBF24",
+    "emblem": "◆"
+  },
+  "travelers": [
+    {
+      "id": "aanya",
+      "name": "Aanya Jain",
+      "shortName": "Aanya",
+      "color": "#8B5CF6"
+    },
+    {
+      "id": "abhav",
+      "name": "Abhav Thakur",
+      "shortName": "Abhav",
+      "color": "#3B82F6",
+      "tags": [
+        "lead"
+      ]
+    }
+  ],
+  "flights": [],
+  "stays": [
+    {
+      "id": "sri-durga-comfort",
+      "kind": "hotel",
+      "name": "Sri Durga Comfort Stay, Hampi",
+      "city": "Sanapur, North Hampi",
+      "address": "Guest House, near Sunrise Road, Sanapur, Hampi, Karnataka 583234",
+      "addressLocal": "ಶ್ರೀ ದುರ್ಗಾ ಕಂಫರ್ಟ್ ಸ್ಟೇ, ಸನಾಪುರ, ಹಂಪಿ, ಕರ್ನಾಟಕ - ೫೮೩೨೩೪",
+      "phone": "+91 63623 28833",
+      "lat": 15.3484,
+      "lng": 76.4365,
+      "checkIn": "2026-10-02T12:00:00+05:30",
+      "checkOut": "2026-10-04T11:00:00+05:30",
+      "rooms": [
+        {
+          "type": "Comfort Double Room with Mountain & Boulder View",
+          "guests": 2,
+          "confirmation": "SDCS-OCT26-SANAPUR"
+        }
+      ],
+      "status": "confirmed",
+      "notes": "Finalized stay! Highly rated 5.0★ homestay run by Durga & Raj in Sanapur. Peaceful boulder surroundings, hot water, safe scooter parking, and homemade food. Only 1.5 km to Sanapur Lake and 4.2 km to Anjanadri Hill."
+    }
+  ],
+  "transfers": [],
+  "days": [
+    {
+      "index": 1,
+      "date": "2026-10-02",
+      "title": "Sacred Center, Monoliths & Hemakuta Golden Hour",
+      "subtitle": "Hosapete Arrival, Munirabad Scooter Pickup, Sanapur Basecamp (Sri Durga), Virupaksha, Krishna Bazaar, Ugra Narasimha & Hemakuta Sunset",
+      "weather": "28°C • Sunny & Dry • Breezy Sunset",
+      "highlights": [
+        "Hosapete arrival at 06:15 AM via KSRTC sleeper bus (PNR KK22992248, Seats 8 & 7)",
+        "15-min auto transfer to Ravi Bike Rental at Munirabad Station; Honda Activa handover & 2 helmets",
+        "Scenic 24-minute morning ride (14.4 km) along Huligi-Gangavathi Road to Sri Durga Comfort Stay in Sanapur",
+        "Early bag drop & fresh breakfast with hosts Durga & Raj (Phone: 063623 28833)",
+        "7th-century Virupaksha Temple & 750m pillared Hampi Bazaar (Elephant Lakshmi relocated to Malur ECF)",
+        "Krishna Temple & sacred Pushkarani stepped bazaar tank (1513 CE Dashavatara carvings)",
+        "Shaded Tungabhadra river trail walk & Jolada Rotti lunch at Mango Tree",
+        "Afternoon heat-safe siesta & relaxation (02:30–04:00 PM)",
+        "6.7m monolithic Lakshmi Narasimha (Ugra Narasimha) & 3m Badavilinga spring monolith",
+        "Monolithic Sasivekalu & Kadalekalu Ganeshas (heat-optimized late afternoon timing)",
+        "Hemakuta Hill panoramic sunset over Virupaksha and boulder valley",
+        "Dinner in North Hampi (Laughing Buddha / Rock n Chill); Night 1 at Sri Durga Comfort Stay"
+      ],
+      "stops": [
+        {
+          "id": "d1-0-arrival-at-hosapete-central-bus-stand-fr",
+          "start": "2026-10-02T06:15:00+05:30",
+          "title": "Arrival at Hosapete Central Bus Stand from Bengaluru",
+          "category": "transit",
+          "lat": 15.2689,
+          "lng": 76.3909,
+          "notes": "Arrive via KSRTC Non AC Sleeper (Departed Majestic 11:14 PM, PNR: KK22992248, TripCode: 2314BNGHSP, Seats 8 & 7). Fresh early morning weather in Hosapete."
+        },
+        {
+          "id": "d1-1-auto-transfer-hosapete-bus-stand-munirab",
+          "start": "2026-10-02T06:30:00+05:30",
+          "end": "2026-10-02T07:00:00+05:30",
+          "title": "Auto Transfer: Hosapete Bus Stand ➔ Munirabad Station",
+          "category": "transit",
+          "lat": 15.3116,
+          "lng": 76.3382,
+          "notes": "Take a 15–20 min auto (~14 km via NH67 / Ballari-Hubballi Rd) from Hosapete Central Bus Stand to Ravi Bike Rental at Munirabad Railway Station (Huligi corridor). Fare is ~₹200–₹250."
+        },
+        {
+          "id": "d1-2-scooter-handover-inspection-helmets-at-r",
+          "start": "2026-10-02T07:00:00+05:30",
+          "end": "2026-10-02T07:30:00+05:30",
+          "title": "Scooter Handover, Inspection & Helmets at Ravi Bike Rental",
+          "category": "transit",
+          "lat": 15.3116,
+          "lng": 76.3382,
+          "notes": "Complete rental formalities with Linga Bhaiya / Ravi (Phone: 087928 58466). Inspect Honda Activa 6G, test brakes and headlights, record a 360° walkaround video, and collect 2 ISI helmets. Rate: ₹400–₹500/day."
+        },
+        {
+          "id": "d1-3-scenic-morning-ride-to-sri-durga-comfort",
+          "start": "2026-10-02T07:30:00+05:30",
+          "end": "2026-10-02T08:15:00+05:30",
+          "title": "Scenic Morning Ride to Sri Durga Comfort Stay (Sanapur)",
+          "category": "stay",
+          "lat": 15.3484,
+          "lng": 76.4365,
+          "notes": "Enjoy a tranquil 14.4 km morning ride (24 mins) along Huligi-Gangavathi Road cutting directly into the North Hampi boulder belt. Arrive at Sri Durga Comfort Stay on Sunrise Road, Sanapur. Drop bags with welcoming hosts Durga & Raj, freshen up in guest facilities, and enjoy hot home-cooked idli, vada, and tea."
+        },
+        {
+          "id": "d1-4-ride-to-sacred-center-virupaksha-temple-",
+          "start": "2026-10-02T08:30:00+05:30",
+          "end": "2026-10-02T09:15:00+05:30",
+          "title": "Ride to Sacred Center (Virupaksha Temple via Anegundi Bridge)",
+          "category": "transit",
+          "lat": 15.335,
+          "lng": 76.46,
+          "notes": "Ride scooter across the scenic Anegundi Bridge connecting North and South Hampi (or take 5-min scooter ride to Virupapur Gaddi ferry point and hop on the 2-minute passenger ferry boat across Tungabhadra to Virupaksha Ghat). Park scooter at Virupaksha designated two-wheeler parking."
+        },
+        {
+          "id": "d1-5-virupaksha-temple-darshan-pillared-hampi",
+          "start": "2026-10-02T09:15:00+05:30",
+          "end": "2026-10-02T11:00:00+05:30",
+          "title": "Virupaksha Temple Darshan & Pillared Hampi Bazaar Walk",
+          "category": "sight",
+          "lat": 15.335,
+          "lng": 76.46,
+          "notes": "Explore the functioning 7th-century Dravidian temple complex dedicated to Lord Shiva, featuring the majestic 50m eastern gopuram, intricate ceiling murals, and the famous inverted pinhole camera shadow phenomenon in the rear sanctum. (Note: Elephant Lakshmi was relocated in late May 2026 to the Malur Elephant Care Facility for veterinary rehabilitation; blessings are no longer offered). Walk down the ancient 750m pillared Hampi Bazaar."
+        },
+        {
+          "id": "d1-6-krishna-temple-sacred-pushkarani-bazaar",
+          "start": "2026-10-02T11:00:00+05:30",
+          "end": "2026-10-02T11:45:00+05:30",
+          "title": "Krishna Temple & Sacred Pushkarani Bazaar",
+          "category": "sight",
+          "lat": 15.33,
+          "lng": 76.4635,
+          "notes": "Built in 1513 CE by Emperor Krishnadevaraya to celebrate the conquest of Udayagiri (Orissa). Marvel at the exquisitely carved pillars depicting the 10 incarnations of Vishnu (Dashavatara), the open mukhamantapa, and walk across to the expansive stepped Pushkarani water tank and pillared market avenue."
+        },
+        {
+          "id": "d1-7-shaded-riverside-trail-tungabhadra-walk",
+          "start": "2026-10-02T11:45:00+05:30",
+          "end": "2026-10-02T13:00:00+05:30",
+          "title": "Shaded Riverside Trail & Tungabhadra Walk",
+          "category": "sight",
+          "lat": 15.337,
+          "lng": 76.466,
+          "notes": "Stroll along the shaded boulder path alongside the sacred Tungabhadra River connecting Virupaksha to Kodandarama Temple. The natural river breeze and boulder shade provide natural heat relief before noon."
+        },
+        {
+          "id": "d1-8-relaxed-lunch-at-mango-tree-restaurant",
+          "start": "2026-10-02T13:00:00+05:30",
+          "end": "2026-10-02T14:15:00+05:30",
+          "title": "Relaxed Lunch at Mango Tree Restaurant",
+          "category": "food",
+          "lat": 15.3375,
+          "lng": 76.4625,
+          "notes": "Authentic North Karnataka Jolada Rotti meals, thalis, fresh lime mint coolers, and fruit desserts."
+        },
+        {
+          "id": "d1-9-midday-heat-avoidance-shaded-relaxation",
+          "start": "2026-10-02T14:30:00+05:30",
+          "end": "2026-10-02T16:00:00+05:30",
+          "title": "Midday Heat Avoidance & Shaded Relaxation",
+          "category": "stay",
+          "lat": 15.3484,
+          "lng": 76.4365,
+          "notes": "Avoid granite skillet heat during the 32°C peak hours. Relax at Mango Tree's shaded lounge or ride back to Sri Durga Comfort Stay to unpack, take a shower, and recharge."
+        },
+        {
+          "id": "d1-10-lakshmi-narasimha-ugra-narasimha-badavil",
+          "start": "2026-10-02T16:15:00+05:30",
+          "end": "2026-10-02T16:45:00+05:30",
+          "title": "Lakshmi Narasimha (Ugra Narasimha) & Badavilinga Monoliths",
+          "category": "sight",
+          "lat": 15.328,
+          "lng": 76.463,
+          "notes": "Stand before Hampi's largest monolithic sculpture: the 6.7m high Ugra Narasimha, masterfully hewn from a single granite boulder in 1528 CE, depicting Lord Vishnu seated on the giant coils of the seven-hooded serpent Adisesha. Just steps away, visit the 3m monolithic Badavilinga, permanently submerged in canal spring water commissioned by a poor peasant woman."
+        },
+        {
+          "id": "d1-11-monolithic-sasivekalu-kadalekalu-ganesha",
+          "start": "2026-10-02T16:45:00+05:30",
+          "end": "2026-10-02T17:30:00+05:30",
+          "title": "Monolithic Sasivekalu & Kadalekalu Ganeshas",
+          "category": "sight",
+          "lat": 15.332,
+          "lng": 76.462,
+          "notes": "Walk up to the two colossal monolithic Ganesha statues. Sasivekalu (mustard seed, 2.4m) stands in an open pavilion depicting Ganesha with a snake tied around his belly; Kadalekalu (gram seed, 4.6m) stands with slender carved pillars."
+        },
+        {
+          "id": "d1-12-hemakuta-hill-sunset-panorama",
+          "start": "2026-10-02T17:30:00+05:30",
+          "end": "2026-10-02T18:45:00+05:30",
+          "title": "Hemakuta Hill Sunset Panorama",
+          "category": "sight",
+          "lat": 15.333,
+          "lng": 76.459,
+          "notes": "Walk onto the gentle granite slope of Hemakuta Hill, dotted with over 30 pre-Vijayanagara triple-chambered shrines. Watch the sky turn gold over Virupaksha and the boulder horizon."
+        },
+        {
+          "id": "d1-13-scenic-dusk-ride-to-sanapur-dinner-at-no",
+          "start": "2026-10-02T19:15:00+05:30",
+          "end": "2026-10-02T21:00:00+05:30",
+          "title": "Scenic Dusk Ride to Sanapur & Dinner at North Hampi Cafes",
+          "category": "food",
+          "lat": 15.3484,
+          "lng": 76.4365,
+          "notes": "Ride scooter across Anegundi Bridge back to North Hampi (Sanapur). Head to iconic paddy-field cafes like Laughing Buddha or Rock n Chill for wood-fired pizzas, lemon ginger tea, and acoustic vibes. Return to Sri Durga Comfort Stay for a peaceful night amidst boulder silhouettes."
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "date": "2026-10-03",
+      "title": "Royal Center, Stone Chariot & Musical Pillars",
+      "subtitle": "Vijaya Vittala Stone Chariot, Queen's Bath, Zenana Enclosure, King's Court & Malyavanta Sunset",
+      "weather": "29°C • Warm & Dry • Cool Sunset Breeze",
+      "highlights": [
+        "07:30 AM fresh home breakfast by Durga & Raj at Sri Durga Comfort Stay",
+        "08:00 AM early start at Vijaya Vittala Temple: Iconic Stone Chariot (on ₹50 note) & 56 musical pillars",
+        "Single ₹50 ASI ticket covers both Vittala and Zenana Enclosure on the same day",
+        "Queen's Bath: Indo-Islamic royal aquatic pavilion with water moat & vaulted balconies",
+        "Lotus Mahal & 11-domed royal Elephant Stables in the Zenana Enclosure",
+        "King's Court & Mahanavami Dibba 3-tiered platform & geometric black-schist Pushkarani stepped tank",
+        "Underground Shiva Temple (Prasanna Virupaksha): Atmospheric spring water subterranean sanctuary",
+        "Malyavanta Raghunatha Hill sunset: Continuous Ramayana chanting & safe motorable road descent",
+        "Ride back across Anegundi Bridge; dinner at The Goan Corner / Rock n Chill; Night 2 at Sri Durga Comfort Stay"
+      ],
+      "stops": [
+        {
+          "id": "d2-0-breakfast-at-sri-durga-comfort-stay-morn",
+          "start": "2026-10-03T07:15:00+05:30",
+          "end": "2026-10-03T08:00:00+05:30",
+          "title": "Breakfast at Sri Durga Comfort Stay & Morning Ride",
+          "category": "stay",
+          "lat": 15.3484,
+          "lng": 76.4365,
+          "notes": "Start the day with fresh home-cooked South Indian breakfast prepared by hosts Durga & Raj. Mount your scooter for an 18 km morning ride across Anegundi Bridge directly to the Vijaya Vittala parking area."
+        },
+        {
+          "id": "d2-1-vijaya-vittala-temple-the-iconic-stone-c",
+          "start": "2026-10-03T08:00:00+05:30",
+          "end": "2026-10-03T11:30:00+05:30",
+          "title": "Vijaya Vittala Temple & The Iconic Stone Chariot",
+          "category": "sight",
+          "lat": 15.337,
+          "lng": 76.477,
+          "notes": "Arrive early at Vittala complex. Take the pollution-free battery buggy from parking. Marvel at the 16th-century Stone Chariot (featured on ₹50 currency note) and the 56 monolithic musical pillars of the Ranga Mantapa."
+        },
+        {
+          "id": "d2-2-lunch-in-kamalapura-mayura-bhuvaneshwari",
+          "start": "2026-10-03T12:00:00+05:30",
+          "end": "2026-10-03T13:30:00+05:30",
+          "title": "Lunch in Kamalapura / Mayura Bhuvaneshwari",
+          "category": "food",
+          "lat": 15.3094,
+          "lng": 76.4785,
+          "notes": "South Indian vegetarian thali, bisi bele bath, and cooling curd rice at KSTDC Mayura restaurant in Kamalapura."
+        },
+        {
+          "id": "d2-3-queen-s-bath-royal-aquatic-pavilion",
+          "start": "2026-10-03T14:00:00+05:30",
+          "end": "2026-10-03T14:45:00+05:30",
+          "title": "Queen's Bath (Royal Aquatic Pavilion)",
+          "category": "sight",
+          "lat": 15.313,
+          "lng": 76.474,
+          "notes": "Begin the Royal Center tour at the Queen's Bath. Marvel at the unique Indo-Islamic architecture, surrounded by an ancient protective water moat, with ornate overhanging jharokha balconies, vaulted corridors, and a central lotus-shaped sunken pool where royal women bathed in scented waters."
+        },
+        {
+          "id": "d2-4-lotus-mahal-royal-elephant-stables-zenan",
+          "start": "2026-10-03T14:45:00+05:30",
+          "end": "2026-10-03T15:45:00+05:30",
+          "title": "Lotus Mahal & Royal Elephant Stables (Zenana Enclosure)",
+          "category": "sight",
+          "lat": 15.3198,
+          "lng": 76.472,
+          "notes": "Tour the women's secular palace quarters: the two-story Lotus Mahal with multi-layered lotus-petal archways and ancient terracotta cooling channels, and the grand 11-domed royal Elephant Stables with alternating Islamic and Hindu domes."
+        },
+        {
+          "id": "d2-5-king-s-court-mahanavami-dibba-stepped-ta",
+          "start": "2026-10-03T15:45:00+05:30",
+          "end": "2026-10-03T16:30:00+05:30",
+          "title": "King's Court, Mahanavami Dibba & Stepped Tank (Pushkarani)",
+          "category": "sight",
+          "lat": 15.3168,
+          "lng": 76.4712,
+          "notes": "Explore the ceremonial heart of the Vijayanagara Empire: climb the massive 3-tiered Mahanavami Dibba platform adorned with military reliefs, and admire the perfectly geometric black-schist stepped Pushkarini water tank fed by ancient stone aqueducts."
+        },
+        {
+          "id": "d2-6-underground-shiva-temple-prasanna-virupa",
+          "start": "2026-10-03T16:30:00+05:30",
+          "end": "2026-10-03T17:15:00+05:30",
+          "title": "Underground Shiva Temple (Prasanna Virupaksha)",
+          "category": "sight",
+          "lat": 15.3225,
+          "lng": 76.468,
+          "notes": "Discover the sunken, subterranean sanctuary of Prasanna Virupaksha. Built several meters below ground level, this historic temple's pillared halls and inner sanctum are continually surrounded by cool, natural spring water fed by ancient underground canals."
+        },
+        {
+          "id": "d2-7-malyavanta-raghunatha-hill-sunset",
+          "start": "2026-10-03T17:15:00+05:30",
+          "end": "2026-10-03T18:30:00+05:30",
+          "title": "Malyavanta Raghunatha Hill Sunset",
+          "category": "sight",
+          "lat": 15.3218,
+          "lng": 76.488,
+          "notes": "16th-century Rama temple perched on boulder hill. Renowned for continuous centuries-old Ramayana chanting and safe, panoramic sunset ledges with paved road descent."
+        },
+        {
+          "id": "d2-8-evening-ride-across-bridge-dinner-at-the",
+          "start": "2026-10-03T19:15:00+05:30",
+          "end": "2026-10-03T20:45:00+05:30",
+          "title": "Evening Ride Across Bridge & Dinner at The Goan Corner",
+          "category": "food",
+          "lat": 15.3484,
+          "lng": 76.4365,
+          "notes": "Ride back across Anegundi Bridge into Sanapur. Enjoy dinner at The Goan Corner or Anegundi Garden Cafe (creamy hummus, falafel platters, wood-fired thin-crust pizza, and fresh smoothies)."
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "date": "2026-10-04",
+      "title": "Anegundi, Sanapur Boulders, Coracle & Hosapete Transit",
+      "subtitle": "Sanapur Lake Morning Walk, Coracle Boating, Sanapur Boulders, Anegundi Cafes, Anjanadri Sunset & KSRTC Pallakki Sleeper to BLR",
+      "weather": "27°C • Fresh Morning • Golden Afternoon",
+      "highlights": [
+        "Fresh morning boulder walk along Sanapur Lake Sunrise Ridge (1.5 km from stay) or Matanga sunrise option",
+        "Hearty breakfast at Sri Durga Comfort Stay; pack daypack & store heavy luggage with Durga & Raj",
+        "Sanapur Lake boulder reservoir coracle boat ride (Strict safety advisory: NO cliff jumping/swimming; mugger crocodile warnings)",
+        "Bouldering session with certified local instructors at Monkey Zone / Golden Boulders",
+        "Riverside paddy-field cafe lunch (Rock n Chill / Laughing Buddha woodfired pizza & coolers)",
+        "Anegundi historic village, Gagan Mahal palace ruins & banana-fiber handicraft cooperatives",
+        "Anjanadri Hill (Hanuman birthplace) 575-step climb during breezy 4:30 PM sunset golden hour (4.2 km from stay)",
+        "Retrieve stored backpacks from Sri Durga Comfort Stay, freshen up, and pack scooter",
+        "Ride 14.4 km to Ravi Bike Rental at Munirabad Station (handover by 07:30 PM, collect deposit)",
+        "20-min auto transfer to Hosapete Central Bus Stand; celebratory town dinner (Waves / Priyadarshini Pride)",
+        "Board KSRTC Pallakki Sleeper at 22:45 hrs Platform 0 (PNR: KS23020219, Seats 11 & 12) returning to Bengaluru"
+      ],
+      "stops": [
+        {
+          "id": "d3-0-sanapur-lake-sunrise-ridge-walk",
+          "start": "2026-10-04T06:30:00+05:30",
+          "end": "2026-10-04T07:30:00+05:30",
+          "title": "Sanapur Lake Sunrise Ridge Walk",
+          "category": "sight",
+          "lat": 15.362,
+          "lng": 76.461,
+          "notes": "Wake up to fresh morning air in Sanapur. Take a 3-minute scooter ride (1.5 km) from Sri Durga Comfort Stay to Sanapur Lake for a peaceful morning boulder stroll as the sun lights up the granite ridges."
+        },
+        {
+          "id": "d3-1-breakfast-at-sri-durga-comfort-stay-bagg",
+          "start": "2026-10-04T07:30:00+05:30",
+          "end": "2026-10-04T08:30:00+05:30",
+          "title": "Breakfast at Sri Durga Comfort Stay & Baggage Storage",
+          "category": "stay",
+          "lat": 15.3484,
+          "lng": 76.4365,
+          "notes": "Enjoy breakfast prepared by Durga & Raj. Complete room checkout, pack a light daypack with essentials (sunscreen, sunglasses, power bank, bus clothes), and leave heavy luggage stored safely at Sri Durga Comfort Stay."
+        },
+        {
+          "id": "d3-2-sanapur-lake-boulder-reservoir-coracle-b",
+          "start": "2026-10-04T09:00:00+05:30",
+          "end": "2026-10-04T10:30:00+05:30",
+          "title": "Sanapur Lake Boulder Reservoir & Coracle Boating",
+          "category": "sight",
+          "lat": 15.362,
+          "lng": 76.461,
+          "notes": "Tranquil reservoir surrounded by giant granite boulder stacks. Enjoy a traditional circular coracle boat ride (₹400–₹500 for two) through the canal gorge with licensed boatmen. CRITICAL SAFETY ADVISORY: Strict prohibition against swimming or cliff jumping due to hidden granite rock shelves and official warning signs of mugger crocodiles (Crocodylus palustris)."
+        },
+        {
+          "id": "d3-3-bouldering-with-certified-instructors-mo",
+          "start": "2026-10-04T11:00:00+05:30",
+          "end": "2026-10-04T12:30:00+05:30",
+          "title": "Bouldering with Certified Instructors (Monkey Zone / Golden Boulders)",
+          "category": "sight",
+          "lat": 15.3562,
+          "lng": 76.4785,
+          "notes": "Hampi is internationally famed as one of the world's premier granite bouldering destinations. Professional instructors at Monkey Zone and Golden Boulders provide crash-pad rentals, climbing shoes, chalk bags, and guided beginner bouldering sessions across classic problem lines."
+        },
+        {
+          "id": "d3-4-paddy-field-cafe-lunch-chilling-rock-n-c",
+          "start": "2026-10-04T12:45:00+05:30",
+          "end": "2026-10-04T14:15:00+05:30",
+          "title": "Paddy-field Cafe Lunch & Chilling (Rock n Chill / Laughing Buddha)",
+          "category": "food",
+          "lat": 15.3525,
+          "lng": 76.474,
+          "notes": "Relax at one of Anegundi's chilled-out riverside paddy cafes (Rock n Chill, Laughing Buddha, or Anegundi Garden Cafe). Enjoy wood-fired thin crust pizzas, fresh fruit juices, and acoustic jam vibes."
+        },
+        {
+          "id": "d3-5-anegundi-heritage-village-banana-fiber-c",
+          "start": "2026-10-04T14:30:00+05:30",
+          "end": "2026-10-04T16:00:00+05:30",
+          "title": "Anegundi Heritage Village & Banana-Fiber Crafts",
+          "category": "sight",
+          "lat": 15.351,
+          "lng": 76.496,
+          "notes": "Explore historic Anegundi, older than Vijayanagara: Gagan Mahal palace ruins, Chintamani Temple cave complex where Sugriva showed Rama Sita's jewels, and the Kishkinda Trust banana-fiber craft workshops."
+        },
+        {
+          "id": "d3-6-anjanadri-hill-hanuman-birthplace-golden",
+          "start": "2026-10-04T16:30:00+05:30",
+          "end": "2026-10-04T18:15:00+05:30",
+          "title": "Anjanadri Hill (Hanuman Birthplace) Golden Hour Sunset",
+          "category": "sight",
+          "lat": 15.354,
+          "lng": 76.474,
+          "notes": "Located just 4.2 km from your stay in Sanapur! Tackle the 575 stone steps during the breezy 4:30 PM golden hour. Reach the summit temple for breathtaking 360-degree sunset panoramas across emerald paddy fields, the meandering Tungabhadra, and endless boulder valleys."
+        },
+        {
+          "id": "d3-7-retrieve-backpacks-at-sri-durga-comfort-",
+          "start": "2026-10-04T18:30:00+05:30",
+          "end": "2026-10-04T19:00:00+05:30",
+          "title": "Retrieve Backpacks at Sri Durga Comfort Stay & Freshen Up",
+          "category": "stay",
+          "lat": 15.3484,
+          "lng": 76.4365,
+          "notes": "Quick 10-minute ride back to Sri Durga Comfort Stay (4.2 km). Collect your stored backpacks from Durga & Raj, freshen up in the guest washroom, change into comfortable night travel attire, and bid farewell to your hosts."
+        },
+        {
+          "id": "d3-8-scenic-evening-ride-sanapur-ravi-bike-re",
+          "start": "2026-10-04T19:00:00+05:30",
+          "end": "2026-10-04T19:30:00+05:30",
+          "title": "Scenic Evening Ride: Sanapur ➔ Ravi Bike Rental (Munirabad)",
+          "category": "transit",
+          "lat": 15.3116,
+          "lng": 76.3382,
+          "notes": "Smooth 14.4 km evening ride (24 mins) along Huligi-Gangavathi Road from Sanapur straight to Ravi Bike Rental at Munirabad Railway Station. Paved state corridor with cool dusk breeze."
+        },
+        {
+          "id": "d3-9-scooter-handover-deposit-refund-at-ravi-",
+          "start": "2026-10-04T19:30:00+05:30",
+          "end": "2026-10-04T19:45:00+05:30",
+          "title": "Scooter Handover & Deposit Refund at Ravi Bike Rental",
+          "category": "transit",
+          "lat": 15.3116,
+          "lng": 76.3382,
+          "notes": "Hand over Honda Activa to Linga Bhaiya / Ravi (Phone: 087928 58466) at Munirabad Station. Quick 5-minute visual check, return both ISI helmets, and collect your refundable security deposit / original ID card."
+        },
+        {
+          "id": "d3-10-auto-transfer-munirabad-station-hosapete",
+          "start": "2026-10-04T19:45:00+05:30",
+          "end": "2026-10-04T20:15:00+05:30",
+          "title": "Auto Transfer: Munirabad Station ➔ Hosapete Central Bus Stand",
+          "category": "transit",
+          "lat": 15.2689,
+          "lng": 76.3909,
+          "notes": "Take a 20-min auto (~14 km via NH67) from Munirabad Station directly into Hosapete Central Bus Stand. Fare is ~₹200–₹250."
+        },
+        {
+          "id": "d3-11-celebratory-dinner-in-hosapete-town-wave",
+          "start": "2026-10-04T20:15:00+05:30",
+          "end": "2026-10-04T22:00:00+05:30",
+          "title": "Celebratory Dinner in Hosapete Town (Waves / Priyadarshini Pride)",
+          "category": "food",
+          "lat": 15.2689,
+          "lng": 76.3909,
+          "notes": "Relaxed sit-down farewell dinner within walking distance of Hosapete Bus Stand: Waves Restaurant or Hotel Priyadarshini Pride Udupi Veg. Enjoy hot North Karnataka Jolada Rotti meals, paneer butter masala, jeera rice, and filter coffee. Pick up packaged snacks and two 1L sealed water bottles for the journey."
+        },
+        {
+          "id": "d3-12-board-ksrtc-pallakki-sleeper-bus-to-beng",
+          "start": "2026-10-04T22:15:00+05:30",
+          "end": "2026-10-04T22:45:00+05:30",
+          "title": "Board KSRTC Pallakki Sleeper Bus to Bengaluru",
+          "category": "transit",
+          "lat": 15.2689,
+          "lng": 76.3909,
+          "notes": "Enter Hosapete Central Bus Stand Platform No. 0. Board KSRTC Pallakki Non AC Sleeper (Departing 22:45 hrs / 10:45 PM, TripCode: 2132GVTBNG, PNR: KS23020219, Seats 11 & 12, Transaction Password: 4126)."
+        },
+        {
+          "id": "d3-13-arrival-at-bengaluru-majestic-terminal-1",
+          "start": "2026-10-04T06:00:00+05:30",
+          "title": "Arrival at Bengaluru (Majestic Terminal 1) ➔ Cab to Bellandur",
+          "category": "transit",
+          "lat": 12.9778,
+          "lng": 77.5713,
+          "notes": "Bus arrives at Kempegowda Bus Station (Majestic Terminal 1) at approximately 06:00 AM Monday morning. Book a quick Uber/Ola cab back to Bellandur (25–30 mins via early morning empty roads), arriving home refreshed with zero weekend fatigue!"
+        }
+      ]
+    }
+  ],
+  "phrases": [],
+  "emergency": [
+    {
+      "id": "e-112",
+      "kind": "police",
+      "label": "Emergency (all services)",
+      "phone": "112",
+      "status": "confirmed"
+    },
+    {
+      "id": "e-108",
+      "kind": "ambulance",
+      "label": "Ambulance",
+      "phone": "108",
+      "status": "confirmed"
+    },
+    {
+      "id": "e-0",
+      "kind": "hospital",
+      "label": "District Hospital Hosapete",
+      "phone": "+91 8394 222100",
+      "note": "24/7 Government Emergency & Trauma Center",
+      "status": "confirmed"
+    },
+    {
+      "id": "e-1",
+      "kind": "other",
+      "label": "Karnataka Tourist Police Helpline",
+      "phone": "112",
+      "note": "State Tourism & Visitor Safety Helpline",
+      "status": "confirmed"
+    },
+    {
+      "id": "e-2",
+      "kind": "other",
+      "label": "Hosapete Town Police Station",
+      "phone": "+91 8394 220333",
+      "note": "Local jurisdiction for Hosapete & Kamalapura",
+      "status": "confirmed"
+    },
+    {
+      "id": "e-3",
+      "kind": "other",
+      "label": "Hampi Tourism Information Center",
+      "phone": "+91 8394 241339",
+      "note": "Official KSTDC tourist information booth",
+      "status": "confirmed"
+    }
+  ],
+  "checklist": [
+    {
+      "id": "sec-1",
+      "title": "Rentals & Autonomous Commute",
+      "items": [
+        {
+          "id": "chk_rent_1",
+          "text": "Original Driving License (Physical Card / DigiLocker / mParivahan)",
+          "detail": "Mandatory to present before taking handover of Honda Activa scooter from Ravi Bike Rental at Munirabad Station (Phone: 087928 58466)."
+        },
+        {
+          "id": "chk_rent_2",
+          "text": "Pre-Ride Vehicle Inspection & 360° Video",
+          "detail": "Take a 30-second timestamped video showing body scratches, tire tread depth, odometer, mirror clamps, and headlight function before riding away."
+        },
+        {
+          "id": "chk_rent_3",
+          "text": "Helmets for Both Rider & Pillion",
+          "detail": "Karnataka state traffic police enforce mandatory helmets for both rider and pillion on state highways and Kamalapura checkpoints."
+        },
+        {
+          "id": "chk_rent_4",
+          "text": "Rental Rate Agreement & Fuel Strategy",
+          "detail": "Agreed rate: ₹450/day for Honda Activa from Ravi Bike Rental at Munirabad Station. Fill fuel at IndianOil/HP pumps along Shivapur Rd / Huligi corridor or Kamalapura."
+        },
+        {
+          "id": "chk_rent_5",
+          "text": "Save Rental Breakdown & Host Contacts Offline",
+          "detail": "Saved emergency contacts: Ravi Bike Rental / Linga Bhaiya (+91 87928 58466) and Sri Durga Comfort Stay hosts Durga & Raj (+91 63623 28833)."
+        }
+      ]
+    },
+    {
+      "id": "sec-2",
+      "title": "Important Things to Carry (Sun, Weather & Boulders)",
+      "items": [
+        {
+          "id": "chk_gear_1",
+          "text": "Sturdy Rubber-Traction Shoes / Trail Sneakers",
+          "detail": "Essential for safe friction on slick granite boulders at Matanga Hill, Hemakuta, and 575 stone steps at Anjanadri. No smooth-soled shoes or flip-flops."
+        },
+        {
+          "id": "chk_gear_2",
+          "text": "Broad-Rimmed Sun Hat / UPF Cap",
+          "detail": "Crucial protection against intense radiant heat reflecting off open granite boulders (Sasivekalu, Kadalekalu, Vittala)."
+        },
+        {
+          "id": "chk_gear_3",
+          "text": "UV400 Polarized Sunglasses",
+          "detail": "High UV glare cuts visibility across vast granite rock sheets and Tungabhadra waters."
+        },
+        {
+          "id": "chk_gear_4",
+          "text": "High SPF 50+ Broad-Spectrum Sunscreen & Lip Balm",
+          "detail": "Reapply every 2.5–3 hours. Hampi's October afternoon sun can reach 32°C with high UV index."
+        },
+        {
+          "id": "chk_gear_5",
+          "text": "2x Insulated 1L Reusable Water Bottles",
+          "detail": "Maintain continuous hydration. Fill up before leaving Sri Durga Comfort Stay each morning."
+        },
+        {
+          "id": "chk_gear_6",
+          "text": "Lightweight Breathable Cotton Attire (Modest Dress Code)",
+          "detail": "Loose-fitting cottons covering shoulders and knees are required for entry into the active sanctum of Sri Virupaksha Temple."
+        },
+        {
+          "id": "chk_gear_7",
+          "text": "Light Sweat Towel & Compact 15–20L Daypack",
+          "detail": "Keep water, phone, and essentials safely zipped while riding scooter or climbing granite steps."
+        }
+      ]
+    },
+    {
+      "id": "sec-3",
+      "title": "Travel Documentation & Offline Bookings",
+      "items": [
+        {
+          "id": "chk_doc_1",
+          "text": "Original Govt Photo ID (Aadhaar / Voter ID / Passport)",
+          "detail": "Required for KSRTC bus conductor verification, homestay check-in, and ASI monument security gates."
+        },
+        {
+          "id": "chk_doc_2",
+          "text": "Confirmed KSRTC Sleeper M-Tickets Saved Offline",
+          "detail": "Outbound: BLR ➔ Hosapete (PNR: KK22992248, TripCode: 2314BNGHSP, Seats 8 & 7, Majestic P15, 23:14 hrs). Return: Hosapete ➔ BLR (PNR: KS23020219, TripCode: 2132GVTBNG, Seats 11 & 12, Hosapete P0, 22:45 hrs)."
+        },
+        {
+          "id": "chk_doc_3",
+          "text": "ASI Monument Entry Passes (asi.paygov.org.in)",
+          "detail": "Single ₹50 ASI ticket covers both Vijaya Vittala Temple and Lotus Mahal / Zenana Enclosure on the same calendar day. Download QR codes offline."
+        },
+        {
+          "id": "chk_doc_4",
+          "text": "Download Offline Google Maps Area",
+          "detail": "Download offline map for Hosapete, Munirabad, Sanapur Lake, Anegundi, and Kamalapura to navigate through cellular deadzones."
+        },
+        {
+          "id": "chk_doc_5",
+          "text": "Sri Durga Comfort Stay Booking Confirmation",
+          "detail": "Confirmed 2-night homestay booking in Sanapur boulder belt. Hosts Durga & Raj (+91 63623 28833). Early bag drop scheduled for 08:00 AM Oct 2."
+        }
+      ]
+    },
+    {
+      "id": "sec-4",
+      "title": "Health, Hydration & Boulder First Aid",
+      "items": [
+        {
+          "id": "chk_med_1",
+          "text": "Oral Rehydration Salts (ORS / Electral Sachets - 6 Packets)",
+          "detail": "Add to water bottles during morning and afternoon ruin explorations to prevent heat exhaustion and muscle cramping."
+        },
+        {
+          "id": "chk_med_2",
+          "text": "Hydrocolloid Blister Band-Aids & Bandages",
+          "detail": "Critical for sudden heel or toe friction blisters when climbing 575 stone steps at Anjanadri Hill."
+        },
+        {
+          "id": "chk_med_3",
+          "text": "Pain Relief Spray or Roll-on Gel (Volini / Moov)",
+          "detail": "Quick relief for calf muscle tightness and knee fatigue after sunset climbs."
+        },
+        {
+          "id": "chk_med_4",
+          "text": "Odomos Mosquito Repellent Cream / Spray",
+          "detail": "Apply during evening riverside strolls, Tungabhadra breeze, and twilight outdoor dinners in Sanapur."
+        },
+        {
+          "id": "chk_med_5",
+          "text": "Personal Medical Kit (Paracetamol, Antacid, Cetirizine)",
+          "detail": "Carry basic travel pharmaceuticals; limited medical store access inside the core monument zone."
+        }
+      ]
+    },
+    {
+      "id": "sec-5",
+      "title": "Electronics, Tech & Cash (Offline Practicalities)",
+      "items": [
+        {
+          "id": "chk_elec_1",
+          "text": "10,000–20,000 mAh High-Capacity Power Bank & Cables",
+          "detail": "Continuous GPS navigation on scooter and high-res photography drain phone batteries within 5 hours."
+        },
+        {
+          "id": "chk_elec_2",
+          "text": "Microfiber Lens Cleaning Cloth",
+          "detail": "Airborne granite dust quickly coats smartphone and camera lenses; keep clean for crisp golden hour shots."
+        },
+        {
+          "id": "chk_elec_3",
+          "text": "Waterproof Floating Phone Pouch for Coracle Rides",
+          "detail": "Mandatory splash protection during Tungabhadra River and Sanapur Lake circular coracle floats."
+        },
+        {
+          "id": "chk_elec_4",
+          "text": "Compact LED Torch / Headlamp",
+          "detail": "Vital for safe descent from Hemakuta Hill after twilight and early-morning Matanga Hill dawn climbs."
+        },
+        {
+          "id": "chk_elec_5",
+          "text": "Carry ₹3,000–₹4,000 Cash in Small Denominations (₹10, ₹20, ₹50, ₹100)",
+          "detail": "Essential for temple shoe deposit counters (₹5), tender coconuts (₹40–₹50), parking, and coracle boatmen (₹400–₹500) where mobile UPI network drops."
+        },
+        {
+          "id": "chk_elec_6",
+          "text": "Zipped Monkey-Proof Pouch for Loose Items",
+          "detail": "Troops of rhesus macaques frequent Anjanadri Hill and Virupaksha gopuram; secure snacks, sunglasses, and water bottles inside zipped compartments."
+        }
+      ]
+    }
+  ],
+  "docSlots": [],
+  "pois": [],
+  "budget": [
+    {
+      "id": "b-total",
+      "category": "other",
+      "label": "Trip budget (legacy estimate)",
+      "amountInr": 11500,
+      "status": "estimate"
+    }
+  ],
+  "offlineRegions": []
+}
