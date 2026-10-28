@@ -6,9 +6,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Card, Icon, IconButton, Pill, Row, SectionTitle, StatusBadge, Txt, type IconName } from '@/components/ui';
 import { localDate, shortDate } from '@/lib/time';
 import { call, openNavigation, useMe } from '@/lib/trip';
-import { attachDocument, useVaultLock } from '@/lib/vault';
+import { ImportSheet } from '@/components/import-sheet';
+import { attachDocument, pickManyDocuments, useVaultLock, type PickedFile } from '@/lib/vault';
 import { liveRows, useLedger } from '@/store/ledger';
 import { useTripId } from '@/lib/trip-context';
+import { useSyncRefresh } from '@/lib/use-sync-refresh';
 import { useTrip } from '@/store/trips';
 import { colors, radius, space } from '@/theme';
 import type { DocKind } from '@/types/trip';
@@ -25,6 +27,7 @@ const DOC_ICON: Record<DocKind, IconName> = {
 
 export default function Vault() {
   const id = useTripId();
+  const refreshControl = useSyncRefresh();
   const trip = useTrip(id)!;
   const insets = useSafeAreaInsets();
   const me = useMe(trip);
@@ -33,6 +36,8 @@ export default function Vault() {
   const [view, setView] = useState<'mine' | 'group' | 'all'>('mine');
   const [who, setWho] = useState<string>('all');
   const lock = useVaultLock();
+  const [picked, setPicked] = useState<PickedFile[]>([]);
+  const taken = useMemo(() => new Set(files.map((f) => f.slotId).filter((x): x is string => Boolean(x))), [files]);
 
   const meId = me?.id ?? '';
   const personal = (ids: string[]) => ids.length === 1 && ids[0] === meId;
@@ -52,7 +57,7 @@ export default function Vault() {
   ];
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg }} contentContainerStyle={{ padding: space.lg, paddingTop: insets.top + space.sm, paddingBottom: space.xxl }}>
+    <ScrollView refreshControl={refreshControl} style={{ flex: 1, backgroundColor: colors.bg }} contentContainerStyle={{ padding: space.lg, paddingTop: insets.top + space.sm, paddingBottom: space.xxl }}>
       <Txt v="h1">Vault</Txt>
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.lg }}>
@@ -110,6 +115,22 @@ export default function Vault() {
       </ScrollView>
 
       <SectionTitle title="Documents" action="+ Add" onAction={() => lock.unlocked && attachDocument(trip, { travelerIds: view === 'mine' && me ? [me.id] : view === 'all' && who !== 'all' ? [who] : [], me: me?.id })} />
+      {lock.unlocked && (
+        <Pressable
+          onPress={async () => setPicked(await pickManyDocuments())}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md, marginBottom: space.md, borderRadius: radius.lg, backgroundColor: colors.goldSoft, borderWidth: 1, borderColor: colors.gold }}>
+          <Icon name="albums" color={colors.gold} size={20} />
+          <View style={{ flex: 1 }}>
+            <Txt v="small" style={{ fontWeight: '700' }} color={colors.gold}>
+              Import many at once
+            </Txt>
+            <Txt v="small" color={colors.textDim} style={{ fontSize: 12 }}>
+              Pick all your PDFs together — they are matched to the right slots by name.
+            </Txt>
+          </View>
+          <Icon name="chevron-forward" size={16} color={colors.gold} />
+        </Pressable>
+      )}
       {!lock.unlocked ? (
         <Card>
           <Row style={{ marginBottom: space.md }}>
@@ -205,6 +226,7 @@ export default function Vault() {
           )}
         </>
       )}
+      <ImportSheet trip={trip} files={picked} taken={taken} me={me?.id} onClose={() => setPicked([])} />
     </ScrollView>
   );
 }

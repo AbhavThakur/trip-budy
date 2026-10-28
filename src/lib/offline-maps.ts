@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { OfflineRegion, Trip } from '@/types/trip';
 
-export const MAP_STYLE = 'https://tiles.openfreemap.org/styles/dark';
+/** Light, colourful style: readable in bright sun. Offline packs are tied to this exact style. */
+export const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
 
 type RegionState = { pct: number; state: 'none' | 'active' | 'complete' | 'error' };
 
@@ -20,6 +21,11 @@ export function useOfflineRegions(trip: Trip) {
       const packs = await OfflineManager.getPacks();
       for (const p of packs) {
         if (p.metadata?.tripId !== trip.id) continue;
+        if (p.metadata?.style !== MAP_STYLE) {
+          // pack made for an older map style: free the space, it can be re-downloaded
+          await OfflineManager.deletePack(p.id).catch(() => undefined);
+          continue;
+        }
         const st = await p.status();
         next[String(p.metadata.regionId)] = { pct: st.percentage, state: st.state === 'complete' ? 'complete' : 'active' };
       }
@@ -42,7 +48,7 @@ export function useOfflineRegions(trip: Trip) {
       setStates((s) => ({ ...s, [r.id]: { pct: 0, state: 'active' } }));
       try {
         await OfflineManager.createPack(
-          { mapStyle: MAP_STYLE, bounds: r.bounds, minZoom: 9, maxZoom: 15, metadata: { tripId: trip.id, regionId: r.id, name: r.name } },
+          { mapStyle: MAP_STYLE, bounds: r.bounds, minZoom: 9, maxZoom: 15, metadata: { tripId: trip.id, regionId: r.id, name: r.name, style: MAP_STYLE } },
           (_p, st) => setStates((s) => ({ ...s, [r.id]: { pct: st.percentage, state: st.state === 'complete' ? 'complete' : 'active' } })),
           () => setStates((s) => ({ ...s, [r.id]: { pct: 0, state: 'error' } })),
         );

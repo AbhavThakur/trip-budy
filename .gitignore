@@ -49,3 +49,6 @@ example
 scripts/seed/private.local.mjs
 src/data/trips/vietnam-2026.json
 dist-apk/
+
+# admin credentials (Supabase access token)
+.env.admin

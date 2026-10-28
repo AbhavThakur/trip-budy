@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { UpdateBanner } from '@/components/update-banner';
+import { UpdateGate } from '@/components/update-gate';
 import { startReminders } from '@/lib/notify';
 import { useTrips } from '@/store/trips';
 import { startSync } from '@/sync/engine';
@@ -41,7 +41,7 @@ export default function RootLayout() {
           <Stack.Screen name="join" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
           <Stack.Screen name="trip/[id]" />
         </Stack>
-        <UpdateBanner />
+        <UpdateGate />
       </ThemeProvider>
     </GestureHandlerRootView>
   );

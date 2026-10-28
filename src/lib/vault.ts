@@ -76,3 +76,43 @@ export function linkDocToSlot(doc: DocFile, slot: DocSlot, me?: ID) {
   });
   success();
 }
+
+export interface PickedFile {
+  uri: string;
+  name: string;
+  mime: string;
+  size: number;
+}
+
+export async function pickManyDocuments(): Promise<PickedFile[]> {
+  const res = await DocumentPicker.getDocumentAsync({ type: ['application/pdf', 'image/*'], copyToCacheDirectory: true, multiple: true });
+  if (res.canceled) return [];
+  return res.assets.map((a) => ({ uri: a.uri, name: a.name, size: a.size ?? 0, mime: a.mimeType ?? (a.name.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg') }));
+}
+
+/** Saves each picked file once (offline copy) and creates one document row per chosen slot. */
+export function importMany(trip: Trip, items: { file: PickedFile; slotIds: ID[] }[], me?: ID) {
+  let count = 0;
+  for (const { file, slotIds } of items) {
+    const fileId = uid('doc-');
+    importToVault(file.uri, fileId, file.mime);
+    const slots = slotIds.map((id) => trip.docSlots.find((s) => s.id === id)).filter((s): s is DocSlot => Boolean(s));
+    const rows = slots.length ? slots : [undefined];
+    rows.forEach((slot, i) => {
+      useLedger.getState().put('docs', {
+        id: i === 0 ? fileId : uid('doc-'),
+        tripId: trip.id,
+        slotId: slot?.id,
+        title: slot?.title ?? file.name.replace(/\.[^.]+$/, ''),
+        travelerIds: slot?.travelerIds ?? [],
+        mime: file.mime,
+        size: file.size,
+        fileId,
+        updatedBy: me,
+      });
+      count++;
+    });
+  }
+  success();
+  return count;
+}

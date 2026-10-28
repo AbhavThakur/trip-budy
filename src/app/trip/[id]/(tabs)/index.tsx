@@ -5,15 +5,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DayHeader, DayPills, NowNextHud, StopRow, useNow } from '@/components/timeline';
 import { JoinedStack, MeChip, useJoinStates, useOpenWhoAmI } from '@/components/identity';
+import { SyncLine } from '@/components/sync-dot';
 import { Card, IconButton, Ring, Row, Txt } from '@/components/ui';
 import { clockIn, nowAndNext, stopsForDay, todayIn, tripPhase } from '@/lib/time';
 import { shareDay, useReadiness } from '@/lib/trip';
 import { useTripId } from '@/lib/trip-context';
+import { useSyncRefresh } from '@/lib/use-sync-refresh';
 import { useTrip } from '@/store/trips';
 import { colors, space } from '@/theme';
 
 export default function Expedition() {
   const id = useTripId();
+  const refreshControl = useSyncRefresh();
   const trip = useTrip(id)!;
   const insets = useSafeAreaInsets();
   const now = useNow();
@@ -36,7 +39,7 @@ export default function Expedition() {
   const joined = Object.values(states).filter((s) => s !== 'not-joined').length;
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg }} contentContainerStyle={{ paddingTop: insets.top + space.sm, paddingBottom: space.xxl }}>
+    <ScrollView refreshControl={refreshControl} style={{ flex: 1, backgroundColor: colors.bg }} contentContainerStyle={{ paddingTop: insets.top + space.sm, paddingBottom: space.xxl }}>
       <Row style={{ paddingHorizontal: space.lg, justifyContent: 'space-between' }}>
         <Row gap={space.md} style={{ flex: 1 }}>
           <IconButton icon="chevron-back" onPress={() => router.replace('/')} label="All trips" />
@@ -52,7 +55,11 @@ export default function Expedition() {
         <MeChip trip={trip} onPress={openWho} />
       </Row>
 
-      <View style={{ paddingHorizontal: space.lg, marginTop: space.lg }}>
+      <View style={{ paddingHorizontal: space.lg, marginTop: space.sm }}>
+        <SyncLine />
+      </View>
+
+      <View style={{ paddingHorizontal: space.lg, marginTop: space.md }}>
         <NowNextHud trip={trip} />
         <Row style={{ marginTop: space.md, alignItems: 'stretch' }}>
           {phase !== 'completed' && (
@@ -77,7 +84,7 @@ export default function Expedition() {
             <Row style={{ marginTop: 4, justifyContent: 'space-between' }}>
               <JoinedStack trip={trip} size={22} />
               <Txt v="small" color={colors.gold} style={{ fontSize: 11 }}>
-                {joined}/{trip.travelers.length} · Invite
+                {joined}/{trip.travelers.length} · {joined > 1 ? 'Family' : 'Invite'}
               </Txt>
             </Row>
           </Card>

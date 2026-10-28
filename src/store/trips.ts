@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware';
 
 import { bundledTrips } from '@/data';
 import { kvStorage, nowIso } from '@/lib/storage';
+import { mergeWithBundle, bundleHash } from '@/lib/trip-merge';
+import { useSession } from '@/store/session';
 import { variantTripId } from '@/lib/variant';
 import type { ID, Traveler, Trip } from '@/types/trip';
 
@@ -29,12 +31,8 @@ interface TripState {
   reseedFromBundle: () => void;
 }
 
-const hashOf = (t: Trip) => {
-  const s = JSON.stringify(t);
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-  return `${s.length}:${h}`;
-};
+/** Bundled trips keyed by their (variant-aware) id. */
+export const bundledById = (): Record<ID, Trip> => Object.fromEntries(bundledTrips.map((t) => [variantTripId(t.id), { ...t, id: variantTripId(t.id) }]));
 
 export const useTrips = create<TripState>()(
   persist(
@@ -68,14 +66,15 @@ export const useTrips = create<TripState>()(
        * has been edited on-device or is managed from the cloud.
        */
       reseedFromBundle: () => {
-        const s = get();
-        for (const raw of bundledTrips) {
-          const t = { ...raw, id: variantTripId(raw.id) };
-          const m = s.meta[t.id];
-          const h = hashOf(t);
-          if (!m || (m.source === 'bundle' && !m.dirty && m.bundleHash !== h)) {
-            get().setTrip(t, { source: m?.source ?? 'bundle', bundleHash: h, version: m?.version ?? 0, dirty: false });
-          }
+        const bundles = bundledById();
+        const hidden = useSession.getState().hiddenTrips;
+        for (const t of Object.values(bundles)) {
+          if (hidden.includes(t.id)) continue;
+          const cur = get().trips[t.id];
+          const m = get().meta[t.id];
+          const h = bundleHash(t);
+          if (!cur || !m) get().setTrip(t, { source: 'bundle', bundleHash: h, version: 0, dirty: false });
+          else if (m.bundleHash !== h) get().setTrip(mergeWithBundle(cur, t), { bundleHash: h });
         }
       },
     }),

@@ -1,38 +1,61 @@
 import * as Updates from 'expo-updates';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { AppState } from 'react-native';
+import { create } from 'zustand';
 
 export type OtaState = 'idle' | 'checking' | 'downloading' | 'ready' | 'up-to-date' | 'error';
 
+interface OtaStore {
+  state: OtaState;
+  /** true once the very first check after launch has finished (gate stays quiet until then if offline) */
+  settled: boolean;
+  set: (s: OtaState) => void;
+}
+
+export const useOtaStore = create<OtaStore>((set) => ({ state: 'idle', settled: false, set: (state) => set({ state, settled: true }) }));
+
+const withTimeout = <T,>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+
+let inFlight: Promise<void> | null = null;
+
 /**
- * Over-the-air updates (EAS Update, channel "production").
- * Checks on launch (expo-updates ON_LOAD) and again whenever the app returns to the foreground;
- * a downloaded update is applied with a one-tap restart instead of interrupting the user.
+ * Over-the-air updates (EAS Update). Every update is treated as REQUIRED: once downloaded the
+ * app shows a blocking "Update required" screen (see UpdateGate) until the user installs it.
  */
-export async function checkForOta(set: (s: OtaState) => void) {
-  if (__DEV__ || !Updates.isEnabled) return set('idle');
-  try {
-    set('checking');
-    const res = await Updates.checkForUpdateAsync();
-    if (!res.isAvailable) return set('up-to-date');
-    set('downloading');
-    await Updates.fetchUpdateAsync();
-    set('ready');
-  } catch {
-    set('error');
-  }
+export function checkForOta() {
+  const { state, set } = useOtaStore.getState();
+  if (__DEV__ || !Updates.isEnabled) return Promise.resolve(set('idle'));
+  if (state === 'ready') return Promise.resolve();
+  if (inFlight) return inFlight;
+  inFlight = (async () => {
+    try {
+      set('checking');
+      const res = await withTimeout(Updates.checkForUpdateAsync(), 10_000);
+      if (!res.isAvailable) return set('up-to-date');
+      set('downloading');
+      await withTimeout(Updates.fetchUpdateAsync(), 60_000);
+      set('ready');
+    } catch {
+      set('error'); // offline / slow network: never trap the user behind an update we couldn't fetch
+    } finally {
+      inFlight = null;
+    }
+  })();
+  return inFlight;
+}
+
+/** Checks on launch and every time the app returns to the foreground. */
+export function useOtaLifecycle() {
+  useEffect(() => {
+    void checkForOta();
+    const sub = AppState.addEventListener('change', (s) => s === 'active' && void checkForOta());
+    return () => sub.remove();
+  }, []);
 }
 
 export function useOta() {
-  const [state, setState] = useState<OtaState>('idle');
-  useEffect(() => {
-    void checkForOta(setState);
-    const sub = AppState.addEventListener('change', (s) => {
-      if (s === 'active') void checkForOta((n) => setState((prev) => (prev === 'ready' ? prev : n)));
-    });
-    return () => sub.remove();
-  }, []);
-  return { state, check: () => checkForOta(setState), restart: () => Updates.reloadAsync() };
+  const state = useOtaStore((s) => s.state);
+  return { state, check: checkForOta, restart: () => Updates.reloadAsync() };
 }
 
 export function otaInfo() {

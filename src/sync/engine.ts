@@ -7,7 +7,8 @@ import { localFile, remotePathFor } from '@/lib/files';
 import { cloudConfigured, DOCS_BUCKET, ensureSession, supabase } from '@/lib/supabase';
 import { useLedger } from '@/store/ledger';
 import { useSession } from '@/store/session';
-import { useTrips } from '@/store/trips';
+import { mergeWithBundle } from '@/lib/trip-merge';
+import { bundledById, useTrips } from '@/store/trips';
 import type { DocFile, Expense, LedgerTable } from '@/types/ledger';
 import type { ID, Trip } from '@/types/trip';
 
@@ -20,9 +21,20 @@ import type { ID, Trip } from '@/types/trip';
  */
 
 const TABLES: LedgerTable[] = ['expenses', 'settlements', 'checklist', 'docs'];
-let running: Promise<void> | null = null;
-let pendingRun = false;
 const channels = new Map<ID, RealtimeChannel>();
+
+/** Shared by every family phone (EAS env). Lets a phone join any trip its app already contains — no code to type. */
+const FAMILY_KEY = process.env.EXPO_PUBLIC_FAMILY_KEY?.trim();
+/** Optional "tripId:CODE,tripId:CODE" fallback that needs no server migration. */
+const TRIP_CODES: Record<string, string> = Object.fromEntries(
+  (process.env.EXPO_PUBLIC_TRIP_CODES ?? '')
+    .split(',')
+    .map((pair: string) => pair.trim().split(':'))
+    .filter((pair: string[]) => pair.length === 2 && pair[0] && pair[1]),
+);
+const lastLinkTry = new Map<ID, number>();
+const keyedThisRun = new Set<ID>();
+const LINK_RETRY_MS = 20_000;
 
 const sharedTripIds = () => Object.keys(useSession.getState().joinCodes);
 
@@ -105,17 +117,19 @@ async function pullTrip(tripId: ID) {
   applyRows(data as DbRow[]);
   if (data?.length) useSession.getState().setCursor(tripId, (data[data.length - 1] as DbRow).server_updated_at);
 
+  // The trip document is ~100 KB: only download it when its version moved.
   const meta = useTrips.getState().meta[tripId];
-  const { data: tripRow, error: tErr } = await sb.from('tb_trips').select('data, version').eq('id', tripId).maybeSingle();
-  if (tErr) throw tErr;
-  if (!tripRow) return;
-  if (meta?.dirty && tripRow.version === meta.version) {
+  const { data: ver, error: vErr } = await sb.from('tb_trips').select('version').eq('id', tripId).maybeSingle();
+  if (vErr) throw vErr;
+  if (!ver) return;
+  if (meta?.dirty && ver.version === meta.version) {
     const { data: v, error: uErr } = await sb.rpc('tb_update_trip', { p_id: tripId, p_data: useTrips.getState().trips[tripId], p_version: meta.version });
     if (uErr) throw uErr;
     if (v !== -1) useTrips.getState().setTrip(useTrips.getState().trips[tripId], { source: 'cloud', version: v as number, dirty: false });
-  } else if (!meta || tripRow.version > meta.version) {
-    // Remote is newer. Local unsynced trip-document edits lose here (rare: travelers / itinerary edits).
-    useTrips.getState().setTrip(tripRow.data as Trip, { source: 'cloud', version: tripRow.version, dirty: false });
+  } else if (!meta || ver.version > meta.version) {
+    const { data: full, error: fErr } = await sb.from('tb_trips').select('data, version').eq('id', tripId).single();
+    if (fErr) throw fErr;
+    useTrips.getState().setTrip(mergeWithBundle(full.data as Trip, bundledById()[tripId]), { source: 'cloud', version: full.version, dirty: false });
   }
   if (data?.length === 1000) await pullTrip(tripId);
 }
@@ -142,8 +156,16 @@ async function downloadMissingFiles() {
   }
 }
 
+function dropChannel(tripId: ID) {
+  const ch = channels.get(tripId);
+  if (ch) void supabase?.removeChannel(ch);
+  channels.delete(tripId);
+}
+
+/** One websocket channel per trip, only while the app is in the foreground (no battery drain in a pocket). */
 function subscribe(tripId: ID) {
-  if (!supabase || channels.has(tripId)) return;
+  if (!supabase || channels.has(tripId) || AppState.currentState !== 'active') return;
+  let dropped = false;
   const ch = supabase
     .channel(`tb:${tripId}`)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'tb_trip_rows', filter: `trip_id=eq.${tripId}` }, (p) => {
@@ -152,9 +174,18 @@ function subscribe(tripId: ID) {
         void downloadMissingFiles().catch(() => undefined);
       }
     })
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tb_trips', filter: `id=eq.${tripId}` }, () => requestSync())
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'tb_trip_members', filter: `trip_id=eq.${tripId}` }, () => requestSync())
-    .subscribe();
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tb_trips', filter: `id=eq.${tripId}` }, () => void requestSync())
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'tb_trip_members', filter: `trip_id=eq.${tripId}` }, () => void requestSync())
+    .subscribe((status) => {
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+        dropped = true;
+        dropChannel(tripId);
+      } else if (status === 'SUBSCRIBED' && dropped) {
+        // anything that happened while the socket was down is recovered by the cursor pull
+        dropped = false;
+        void requestSync();
+      }
+    });
   channels.set(tripId, ch);
 }
 
@@ -167,28 +198,87 @@ async function pullMembers(tripId: ID, userId: string | null) {
   );
 }
 
-async function runOnce() {
+type Linked = { id: string; data: Trip; version: number; join_code: string };
+
+function adoptCloudTrip(row: Linked) {
+  useTrips.getState().setTrip(mergeWithBundle(row.data, bundledById()[row.id]), { source: 'cloud', version: row.version, dirty: false });
+  useSession.getState().setJoinCode(row.id, row.join_code);
+  useSession.getState().setCursor(row.id, '1970-01-01T00:00:00Z');
+}
+
+/** Links every trip this app contains to its cloud copy, with no code typed by the user. */
+async function autoLink(force: boolean) {
+  const sb = supabase!;
+  let linked = 0;
+  for (const id of Object.keys(useTrips.getState().trips)) {
+    if (useSession.getState().joinCodes[id]) continue;
+    if (!force && Date.now() - (lastLinkTry.get(id) ?? 0) < LINK_RETRY_MS) continue;
+    lastLinkTry.set(id, Date.now());
+    const me = useSession.getState().me[id] ?? null;
+    let res = TRIP_CODES[id] ? await sb.rpc('tb_join_trip', { p_code: TRIP_CODES[id], p_traveler: me }) : null;
+    if ((!res || res.error) && FAMILY_KEY) res = await sb.rpc('tb_join_trip_by_id', { p_trip_id: id, p_key: FAMILY_KEY, p_traveler: me });
+    if (!res || res.error || !(res.data as Linked[])?.length) continue; // leader hasn't shared this trip yet — retry later
+    adoptCloudTrip((res.data as Linked[])[0]);
+    linked++;
+  }
+  return linked;
+}
+
+let lastDiscover = 0;
+const DISCOVER_EVERY_MS = 60_000;
+
+/**
+ * Trips the leader shares later (created in the app, no app update needed) show up on every family phone:
+ * ask the server which trips match our family key and join the ones we don't have yet.
+ */
+async function discoverFamilyTrips(force: boolean) {
+  if (!FAMILY_KEY || (!force && Date.now() - lastDiscover < DISCOVER_EVERY_MS)) return;
+  lastDiscover = Date.now();
+  const { data, error } = await supabase!.rpc('tb_list_family_trips', { p_key: FAMILY_KEY });
+  if (error || !data) return; // function not deployed yet / offline — bundled-trip linking still works
+  const { trips } = useTrips.getState();
+  const hidden = useSession.getState().hiddenTrips;
+  for (const t of data as { id: string }[]) {
+    if (trips[t.id] || hidden.includes(t.id)) continue;
+    const res = await supabase!.rpc('tb_join_trip_by_id', { p_trip_id: t.id, p_key: FAMILY_KEY, p_traveler: null });
+    if (!res.error && (res.data as Linked[])?.length) adoptCloudTrip((res.data as Linked[])[0]);
+  }
+}
+
+/** The trip owner registers the family key so that phones with the app can join without a code. */
+async function registerFamilyKey(tripId: ID) {
+  if (!FAMILY_KEY || keyedThisRun.has(tripId) || useSession.getState().codeOnly[tripId]) return;
+  keyedThisRun.add(tripId);
+  await supabase!.rpc('tb_set_family_key', { p_id: tripId, p_key: FAMILY_KEY });
+}
+
+async function runOnce(force: boolean) {
   const session = useSession.getState();
   if (!cloudConfigured) return session.setSync({ status: 'local-only' });
   const net = await NetInfo.fetch();
   if (!net.isConnected) return session.setSync({ status: 'offline' });
-  session.setSync({ status: 'syncing', error: undefined });
+  const unlinked = Object.keys(useTrips.getState().trips).some((id) => !useSession.getState().joinCodes[id]);
+  session.setSync({ status: unlinked || sharedTripIds().length ? 'syncing' : 'local-only', error: undefined });
   try {
-    if (!sharedTripIds().length) return session.setSync({ status: 'local-only', error: undefined });
     const userId = await ensureSession();
+    await discoverFamilyTrips(force).catch(() => undefined);
+    if (Object.keys(useTrips.getState().trips).some((id) => !useSession.getState().joinCodes[id])) await autoLink(force);
+    if (!sharedTripIds().length) return session.setSync({ status: 'local-only', error: undefined });
     await uploadPendingFiles();
     await flushOutbox();
-    for (const id of sharedTripIds()) {
-      await pullTrip(id);
-      await pullMembers(id, userId);
-      const mine = useSession.getState().members[id]?.find((m) => m.isMe);
-      const me = useSession.getState().me[id];
-      if (mine && me && mine.travelerId !== me) {
-        await supabase!.from('tb_trip_members').update({ traveler_id: me }).eq('trip_id', id).eq('user_id', userId!);
-        await pullMembers(id, userId);
-      }
-      subscribe(id);
-    }
+    await Promise.all(
+      sharedTripIds().map(async (id) => {
+        await Promise.all([pullTrip(id), pullMembers(id, userId)]);
+        const mine = useSession.getState().members[id]?.find((m) => m.isMe);
+        const me = useSession.getState().me[id];
+        if (mine && me && mine.travelerId !== me) {
+          await supabase!.from('tb_trip_members').update({ traveler_id: me }).eq('trip_id', id).eq('user_id', userId!);
+          await pullMembers(id, userId);
+        }
+        if (mine?.role === 'owner') void registerFamilyKey(id).catch(() => undefined);
+        subscribe(id);
+      }),
+    );
     await downloadMissingFiles();
     session.setSync({ status: 'synced', lastSyncAt: new Date().toISOString() });
   } catch (e) {
@@ -197,35 +287,49 @@ async function runOnce() {
   }
 }
 
-/** Debounced, single-flight sync trigger — safe to call after every edit. */
-export function requestSync() {
+let running: Promise<void> | null = null;
+let again = false;
+let forceNext = false;
+
+/**
+ * Single-flight sync. Calls made while a sync is running coalesce into exactly one follow-up run;
+ * the returned promise resolves when everything queued so far has finished (used by pull-to-refresh).
+ */
+export function requestSync(opts: { force?: boolean } = {}) {
+  if (opts.force) forceNext = true;
   if (running) {
-    pendingRun = true;
+    again = true;
     return running;
   }
   running = (async () => {
-    await new Promise((r) => setTimeout(r, 400));
-    await runOnce();
+    do {
+      again = false;
+      const force = forceNext;
+      forceNext = false;
+      await new Promise((r) => setTimeout(r, force ? 0 : 150));
+      await runOnce(force);
+    } while (again);
   })().finally(() => {
     running = null;
-    if (pendingRun) {
-      pendingRun = false;
-      void requestSync();
-    }
   });
   return running;
 }
 
+/** Pull-to-refresh / "Sync now": skips the debounce and the link-retry cool-down. */
+export const syncNow = () => requestSync({ force: true });
+
 /** Publishes a trip to the cloud and returns the 6-letter join code for the family. */
-export async function shareTrip(tripId: ID): Promise<string> {
+export async function shareTrip(tripId: ID, opts: { codeOnly?: boolean } = {}): Promise<string> {
   if (!supabase) throw new Error('Cloud sync is not configured. Add the Supabase keys to .env and rebuild.');
   await ensureSession();
+  useSession.getState().setCodeOnly(tripId, Boolean(opts.codeOnly));
   const trip = useTrips.getState().trips[tripId];
   const me = useSession.getState().me[tripId] ?? null;
   const { data, error } = await supabase.rpc('tb_publish_trip', { p_id: tripId, p_data: trip, p_traveler: me });
   if (error) throw error;
   useSession.getState().setJoinCode(tripId, data as string);
   useTrips.getState().setTrip(trip, { source: 'cloud', version: useTrips.getState().meta[tripId]?.version || 1, dirty: false });
+  void registerFamilyKey(tripId).catch(() => undefined);
   // Queue everything recorded before sharing so it reaches the server.
   const l = useLedger.getState();
   for (const t of TABLES) for (const r of Object.values(l[t])) if (r.tripId === tripId && !l.outbox.some((o) => o.id === r.id)) l.put(t, r as never);
@@ -238,22 +342,23 @@ export async function joinTrip(code: string, travelerId: ID | null): Promise<Tri
   await ensureSession();
   const { data, error } = await supabase.rpc('tb_join_trip', { p_code: code, p_traveler: travelerId });
   if (error) throw error;
-  const row = (data as { id: string; data: Trip; version: number; join_code: string }[])[0];
-  useTrips.getState().setTrip(row.data, { source: 'cloud', version: row.version, dirty: false });
-  useSession.getState().setJoinCode(row.id, row.join_code);
-  useSession.getState().setCursor(row.id, '1970-01-01T00:00:00Z');
-  await requestSync();
-  return row.data;
+  const row = (data as Linked[])[0];
+  adoptCloudTrip(row);
+  await syncNow();
+  return useTrips.getState().trips[row.id];
 }
 
-/** Starts listeners: reconnect, foreground, and outbox changes all trigger a sync. */
+/** Starts listeners: reconnect, foreground and edits trigger a sync; going to the background closes the sockets. */
 export function startSync() {
   void requestSync();
   const unNet = NetInfo.addEventListener((s) => {
     if (s.isConnected) void requestSync();
     else useSession.getState().setSync({ status: cloudConfigured ? 'offline' : 'local-only' });
   });
-  const app = AppState.addEventListener('change', (s) => s === 'active' && void requestSync());
+  const app = AppState.addEventListener('change', (s) => {
+    if (s === 'active') void requestSync();
+    else [...channels.keys()].forEach(dropChannel);
+  });
   const unOutbox = useLedger.subscribe((s, prev) => {
     if (s.outbox.length > prev.outbox.length) void requestSync();
   });
@@ -265,8 +370,7 @@ export function startSync() {
     app.remove();
     unOutbox();
     unTrips();
-    channels.forEach((c) => void supabase?.removeChannel(c));
-    channels.clear();
+    [...channels.keys()].forEach(dropChannel);
   };
 }
 
@@ -282,4 +386,28 @@ export async function setMyTraveler(tripId: ID, travelerId: ID) {
   } catch {
     // offline — the next join/sync will carry it
   }
+}
+
+/** Owner: switch "appears automatically on family phones" on/off for a shared trip. */
+export async function setDiscoverable(tripId: ID, on: boolean) {
+  useSession.getState().setCodeOnly(tripId, !on);
+  if (!supabase || !FAMILY_KEY || !useSession.getState().joinCodes[tripId]) return;
+  await ensureSession();
+  const { error } = await supabase.rpc('tb_set_family_key', { p_id: tripId, p_key: on ? FAMILY_KEY : null });
+  if (error) throw error;
+  keyedThisRun.delete(tripId);
+}
+
+/** Removes a trip: owners delete it for everyone, everyone else just hides it on this phone. */
+export async function removeTrip(tripId: ID) {
+  const session = useSession.getState();
+  const owner = session.members[tripId]?.find((m) => m.isMe)?.role === 'owner';
+  if (supabase && owner && session.joinCodes[tripId]) {
+    const { error } = await supabase.from('tb_trips').delete().eq('id', tripId);
+    if (error) throw error;
+  }
+  session.hideTrip(tripId);
+  session.setJoinCode(tripId, undefined);
+  useLedger.getState().clearTrip(tripId);
+  useTrips.getState().removeTrip(tripId);
 }

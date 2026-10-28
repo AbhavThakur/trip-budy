@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, ScrollView, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useSyncRefresh } from '@/lib/use-sync-refresh';
 import { colors, space } from '@/theme';
 
 import { IconButton, Row, Txt } from './ui';
@@ -45,11 +46,12 @@ export function Screen({
   footer?: ReactNode;
 }) {
   const insets = useSafeAreaInsets();
+  const refreshControl = useSyncRefresh();
   return (
     <KeyboardAvoidingView behavior="padding" style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScreenHeader title={title} subtitle={subtitle} right={right} />
       {scroll ? (
-        <ScrollView contentContainerStyle={[{ padding: space.lg, paddingBottom: insets.bottom + 96 }, contentStyle]} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={[{ padding: space.lg, paddingBottom: insets.bottom + 96 }, contentStyle]} keyboardShouldPersistTaps="handled" refreshControl={refreshControl}>
           {children}
         </ScrollView>
       ) : (

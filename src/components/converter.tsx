@@ -11,7 +11,7 @@ import { Card, Icon, Pill, Row, Txt } from './ui';
 const parse = (s: string) => Number(s.replace(/[^\d.]/g, '')) || 0;
 const fmt = (n: number, decimals: number) => (n ? n.toLocaleString('en-US', { maximumFractionDigits: decimals }) : '');
 
-export function CurrencyConverter({ currency }: { currency: Currency }) {
+export function CurrencyConverter({ currency, bare }: { currency: Currency; bare?: boolean }) {
   const fx = useFx(currency);
   const [local, setLocal] = useState('100,000');
   const [inr, setInr] = useState(fmt(100000 * fx.inrPerUnit, 0));
@@ -21,8 +21,9 @@ export function CurrencyConverter({ currency }: { currency: Currency }) {
   const inrVal = lastEdited === 'inr' ? inr : fmt(parse(local) * fx.inrPerUnit, 0);
   const quick = currency.code === 'VND' ? [50000, 100000, 200000, 500000, 1000000] : [100, 500, 1000];
 
+  const Wrap = bare ? View : Card;
   return (
-    <Card>
+    <Wrap>
       <Row style={{ justifyContent: 'space-between' }}>
         <Txt v="tiny" color={colors.textDim}>
           {currency.code} ⇄ INR
@@ -54,7 +55,7 @@ export function CurrencyConverter({ currency }: { currency: Currency }) {
           />
         ))}
       </Row>
-    </Card>
+    </Wrap>
   );
 }
 

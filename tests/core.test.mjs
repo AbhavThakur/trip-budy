@@ -124,3 +124,112 @@ test('reminders are personal, future-only and cover the key moments', () => {
   const noDaily = planReminders({ trip: vietnam, me: 'abhav', now, enabled: { ...allOn, daily: false }, done: () => false });
   assert.ok(!noDaily.some((r) => r.kind === 'daily'));
 });
+
+import { mergeWithBundle } from '../src/lib/trip-merge.ts';
+
+test('app-update content beats an old cloud copy, but traveler edits are kept', () => {
+  let oldCloud = structuredClone(vietnam);
+  delete oldCloud.passes;
+  oldCloud.days = oldCloud.days.slice(0, 2);
+  oldCloud.travelers = oldCloud.travelers.map((t) => (t.id === 'sundeep' ? { ...t, phone: '+91 98765 43210', passportNo: undefined } : t)).filter((t) => t.id !== 'arjit');
+  oldCloud = JSON.parse(JSON.stringify(oldCloud)); // what the server actually stores
+  const merged = mergeWithBundle(oldCloud, vietnam);
+  assert.equal(merged.passes.length, vietnam.passes.length, 'new content from the app bundle');
+  assert.equal(merged.days.length, vietnam.days.length);
+  assert.equal(merged.travelers.length, 4, 'a traveler removed in the cloud stays removed');
+  const s = merged.travelers.find((t) => t.id === 'sundeep');
+  assert.equal(s.phone, '+91 98765 43210', 'edited phone is kept');
+  assert.equal(s.passportNo, vietnam.travelers.find((t) => t.id === 'sundeep').passportNo, 'fields added by the app fill gaps');
+  assert.equal(mergeWithBundle(oldCloud, undefined), oldCloud, 'non-bundled trips are taken as-is');
+});
+
+import { guessCategory } from '../src/lib/categorize.ts';
+import { budgetMarkId, budgetTotals, resolveBudget } from '../src/lib/budget.ts';
+
+test('expense titles are auto-categorised', () => {
+  const cases = {
+    'Grab to Ba Na Hills': 'transport',
+    'Lunch at Sadhu Vegetarian': 'food',
+    'Coconut coffee': 'food',
+    'Cable car tickets': 'tours',
+    'Silk shirt at the market': 'shopping',
+    'Hotel extra bed': 'stays',
+    'e-visa fee': 'visa',
+    'Airport limousine transfer': 'transport',
+    'Tip for guide': 'tours',
+    'SIM card': 'other',
+    'zzz': null,
+  };
+  for (const [title, cat] of Object.entries(cases)) assert.equal(guessCategory(title), cat, title);
+});
+
+test('planned & prepaid edits overlay the shipped budget without rewriting it', () => {
+  const first = vietnam.budget.find((b) => b.status === 'due');
+  const marks = {
+    [budgetMarkId('vietnam-2026', first.id)]: { id: 'm1', tripId: 'vietnam-2026', itemId: `budget:${first.id}`, travelerId: '', done: false, updatedAt: 'x', status: 'paid', amountInr: 12345 },
+    'vietnam-2026:budget:custom-a1:': { id: 'vietnam-2026:budget:custom-a1:', tripId: 'vietnam-2026', itemId: 'budget:custom-a1', travelerId: '', done: false, updatedAt: 'x', label: 'Travel pillow', category: 'shopping', amountInr: 800, status: 'due' },
+    'vietnam-2026:budget:custom-gone:': { id: 'g', tripId: 'vietnam-2026', itemId: 'budget:custom-gone', travelerId: '', done: false, updatedAt: 'x', deleted: true, label: 'x', amountInr: 5 },
+  };
+  const before = budgetTotals(resolveBudget(vietnam, {}));
+  const lines = resolveBudget(vietnam, marks);
+  const edited = lines.find((l) => l.id === first.id);
+  assert.equal(edited.status, 'paid');
+  assert.equal(edited.amountInr, 12345);
+  assert.ok(edited.edited);
+  assert.equal(lines.length, vietnam.budget.length + 1, 'custom line added, deleted one ignored');
+  assert.equal(lines.at(-1).label, 'Travel pillow');
+  const after = budgetTotals(lines);
+  assert.equal(after.total, before.total - first.amountInr + 12345 + 800);
+  assert.ok(after.paid > before.paid);
+  assert.equal(vietnam.budget.find((b) => b.id === first.id).status, 'due', 'shipped data untouched');
+});
+
+import { matchSlots } from '../src/lib/docmatch.ts';
+
+test('ticket files are matched to the right vault slots from their names', () => {
+  const m = (f) => matchSlots(f, vietnam.docSlots, vietnam.travelers);
+  assert.deepEqual(m('Confirmation_for_Booking_ID_#_2052041833.pdf').slotIds, ['htl-urban-1']);
+  assert.deepEqual(m('Confirmation_for_Booking_ID_#_2052042959.pdf').slotIds, ['htl-urban-2']);
+  assert.deepEqual(m('Receipt_NRJ724054_20260928.pdf').slotIds, ['act-cozybay'], 'Klook order number');
+  const visa = m('Vietnam Visa.pdf');
+  assert.equal(visa.confidence, 'bundle');
+  assert.equal(visa.slotIds.length, 10, '5 visas + the 5 insurance certificates that travel in the same PDF');
+  assert.equal(visa.slotIds.filter((id) => id.startsWith('visa-')).length, 5);
+  assert.deepEqual(m('Abhav passport scan.jpg').slotIds, ['passport-abhav']);
+  assert.deepEqual(m('visa shikha.pdf').slotIds, ['visa-shikha']);
+  assert.equal(m('Booking.com_ Confirmation.pdf').confidence, 'none', 'ambiguous hotel booking is left for the user to choose');
+  assert.equal(m('IMG_2231.jpg').confidence, 'none');
+  const taken = new Set(['visa-abhav']);
+  assert.equal(matchSlots('Vietnam Visa.pdf', vietnam.docSlots, vietnam.travelers, taken).slotIds.length, 9, 'filled slots are not offered again');
+});
+
+import { buildTrip, normalizeImportedTrip, PRESETS, addDays } from '../src/lib/new-trip.ts';
+
+test('a new trip is complete and usable straight away', () => {
+  const preset = PRESETS.find((p) => p.key === 'th');
+  const t = buildTrip({ title: 'Thailand Family Trip', destination: 'Bangkok & Phuket', preset, startDate: '2027-03-10', days: 5, travelers: ['Abhav Thakur', 'Aanya Jain', 'Arjit Jain', 'Aanya Rao'] }, 1700000000000);
+  assert.equal(t.days.length, 5);
+  assert.equal(t.endDate, '2027-03-14');
+  assert.equal(t.days[4].date, '2027-03-14');
+  assert.equal(t.travelers.length, 4);
+  assert.equal(new Set(t.travelers.map((x) => x.id)).size, 4, 'duplicate first names still get unique ids');
+  assert.ok(t.travelers[0].tags.includes('lead'));
+  assert.equal(t.currency.code, 'THB');
+  assert.ok(t.emergency.some((e) => e.phone === '191'));
+  assert.ok(t.docSlots.some((s) => s.id === 'passport-abhav'));
+  assert.match(t.id, /^thailand-family-trip-2027-/);
+  assert.throws(() => buildTrip({ title: 'x', destination: '', preset, startDate: '2027-03-10', days: 5, travelers: ['A'] }), /name/);
+  assert.throws(() => buildTrip({ title: 'Ok trip', destination: '', preset, startDate: '2027-02-30', days: 5, travelers: ['A'] }), /start date/);
+  assert.equal(addDays('2026-12-31', 1), '2027-01-01');
+});
+
+test('imported trip JSON is validated and defaulted', () => {
+  const ok = normalizeImportedTrip({ id: 'x', title: 'T', startDate: '2027-01-01', endDate: '2027-01-02', timezone: 'Asia/Tokyo', currency: { code: 'JPY', symbol: '¥', decimals: 0, inrPerUnit: 0.56 }, travelers: [{ id: 'a', name: 'A' }], days: [{ index: 1, date: '2027-01-01' }] });
+  assert.ok(ok.trip && Array.isArray(ok.trip.flights) && ok.trip.days[0].stops.length === 0);
+  assert.match(normalizeImportedTrip({ id: 'x' }).error, /Missing/);
+  assert.match(normalizeImportedTrip({ ...vietnam, timezone: 'Mars/Base' }).error, /time zone/);
+  assert.match(normalizeImportedTrip({ ...vietnam, startDate: 'soon' }).error, /startDate/);
+  const bad = structuredClone(vietnam); bad.flights[0].bookings[0].travelerIds.push('ghost');
+  assert.match(normalizeImportedTrip(bad).error, /ghost/);
+  assert.ok(normalizeImportedTrip(JSON.parse(JSON.stringify(vietnam))).trip, 'the shipped Vietnam trip is itself importable');
+});

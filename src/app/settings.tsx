@@ -10,7 +10,7 @@ import { cloudConfigured } from '@/lib/supabase';
 import { otaInfo, useOta } from '@/lib/updates';
 import { notificationsGranted, requestNotifications, rescheduleReminders, sendTestNotification, upcomingReminders } from '@/lib/notify';
 import { REMINDER_KINDS, type Reminder } from '@/lib/reminders';
-import { requestSync } from '@/sync/engine';
+import { syncNow } from '@/sync/engine';
 import { useLedger } from '@/store/ledger';
 import { useSession } from '@/store/session';
 import { useTrips } from '@/store/trips';
@@ -55,7 +55,7 @@ export default function Settings() {
             Everything is saved on this phone. To sync between the five phones, add EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY to .env and rebuild (see README).
           </Txt>
         )}
-        {cloudConfigured && <Button kind="ghost" label="Sync now" icon="sync" onPress={() => void requestSync()} style={{ marginTop: space.md }} />}
+        {cloudConfigured && <Button kind="ghost" label="Sync now" icon="sync" onPress={() => void syncNow()} style={{ marginTop: space.md }} />}
       </Card>
 
       {order.map((id) => {

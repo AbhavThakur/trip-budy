@@ -42,6 +42,12 @@ export interface ChecklistMark extends SyncedRow {
   /** '' for group items, traveler id for per-traveler items */
   travelerId: ID | '';
   done: boolean;
+  /** Optional override fields used by "budget:<line id>" rows (planned & prepaid edits). */
+  amountInr?: number;
+  status?: 'paid' | 'due' | 'estimate' | 'placeholder';
+  note?: string;
+  label?: string;
+  category?: string;
 }
 
 export interface DocFile extends SyncedRow {

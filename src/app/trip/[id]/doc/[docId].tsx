@@ -13,7 +13,7 @@ import { Zoomable } from '@/components/zoomable';
 import { isImage, localFile } from '@/lib/files';
 import { useMe } from '@/lib/trip';
 import { linkDocToSlot } from '@/lib/vault';
-import { requestSync } from '@/sync/engine';
+import { syncNow } from '@/sync/engine';
 import { useLedger } from '@/store/ledger';
 import { useTrip } from '@/store/trips';
 import { colors, space } from '@/theme';
@@ -91,7 +91,7 @@ export default function DocViewer() {
           <Txt v="small" color={colors.textDim} style={{ textAlign: 'center' }}>
             It was added on another phone. Connect to the internet once and it downloads automatically for offline use.
           </Txt>
-          <Button label="Sync now" icon="sync" onPress={() => void requestSync()} />
+          <Button label="Sync now" icon="sync" onPress={() => void syncNow()} />
         </View>
       ) : isImage(doc.mime) ? (
         <Zoomable>

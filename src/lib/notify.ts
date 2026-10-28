@@ -71,7 +71,7 @@ export function rescheduleReminders() {
         await Notifications.scheduleNotificationAsync({
           identifier: r.id,
           content: { title: r.title, body: r.body, data: { url: r.url }, sound: true },
-          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: r.at, channelId: CHANNEL },
+          trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: r.at, channelId: CHANNEL, delivery: r.kind === 'flights' || r.kind === 'hotels' ? 'alarmClock' : 'bestEffort' },
         });
       }
     } catch {

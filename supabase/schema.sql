@@ -49,6 +49,8 @@ create or replace function public.tb_is_member(p_trip text)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (select 1 from tb_trip_members where trip_id = p_trip and user_id = auth.uid());
 $$;
+revoke execute on function public.tb_is_member(text) from public, anon;
+grant execute on function public.tb_is_member(text) to authenticated;
 
 -- Last-writer-wins: an older offline edit can never overwrite a newer one.
 create or replace function public.tb_rows_lww()
@@ -108,7 +110,8 @@ begin
   select t.id into v_id from tb_trips t where t.join_code = upper(trim(p_code));
   if v_id is null then raise exception 'invalid join code'; end if;
   insert into tb_trip_members (trip_id, user_id, traveler_id) values (v_id, auth.uid(), p_traveler)
-    on conflict (trip_id, user_id) do update set traveler_id = excluded.traveler_id;
+    on conflict (trip_id, user_id) do update
+      set traveler_id = coalesce(excluded.traveler_id, tb_trip_members.traveler_id);
   return query select t.id, t.data, t.version, t.join_code from tb_trips t where t.id = v_id;
 end $$;
 
@@ -131,6 +134,39 @@ revoke all on function public.tb_update_trip(text, jsonb, integer) from public, 
 grant execute on function public.tb_publish_trip(text, jsonb, text) to authenticated;
 grant execute on function public.tb_join_trip(text, text) to authenticated;
 grant execute on function public.tb_update_trip(text, jsonb, integer) to authenticated;
+
+-- auto-join by trip id + family key (see migrations-2026-10-28b-auto-join.sql)
+alter table public.tb_trips add column if not exists family_key text;
+
+create or replace function public.tb_set_family_key(p_id text, p_key text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
+  if length(coalesce(p_key, '')) < 16 then raise exception 'key too short'; end if;
+  update tb_trips set family_key = p_key
+   where id = p_id
+     and exists (select 1 from tb_trip_members m where m.trip_id = p_id and m.user_id = auth.uid() and m.role = 'owner');
+end $$;
+
+create or replace function public.tb_join_trip_by_id(p_trip_id text, p_key text, p_traveler text default null)
+returns table (id text, data jsonb, version integer, join_code text)
+language plpgsql security definer set search_path = public as $$
+declare
+  v_ok boolean;
+begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
+  select true into v_ok from tb_trips t
+   where t.id = p_trip_id and t.family_key is not null and t.family_key = p_key;
+  if v_ok is null then raise exception 'trip not shared yet'; end if;
+  insert into tb_trip_members (trip_id, user_id, traveler_id) values (p_trip_id, auth.uid(), p_traveler)
+    on conflict (trip_id, user_id) do nothing;
+  return query select t.id, t.data, t.version, t.join_code from tb_trips t where t.id = p_trip_id;
+end $$;
+
+revoke all on function public.tb_set_family_key(text, text) from public, anon;
+revoke all on function public.tb_join_trip_by_id(text, text, text) from public, anon;
+grant execute on function public.tb_set_family_key(text, text) to authenticated;
+grant execute on function public.tb_join_trip_by_id(text, text, text) to authenticated;
 
 -- ───────────────────────────── RLS ─────────────────────────────
 alter table public.tb_trips enable row level security;
@@ -186,3 +222,39 @@ create policy tb_docs_update on storage.objects for update to authenticated
 drop policy if exists tb_docs_delete on storage.objects;
 create policy tb_docs_delete on storage.objects for delete to authenticated
   using (bucket_id = 'trip-docs' and public.tb_is_member((storage.foldername(name))[1]));
+
+-- legacy web-app table: read-only except the keep-alive heartbeat row (see migrations-2026-10-28c-hardening.sql)
+drop policy if exists "Public trips full access" on public.trips;
+drop policy if exists trips_public_read on public.trips;
+drop policy if exists trips_heartbeat_write on public.trips;
+do $$ begin
+  if to_regclass('public.trips') is not null then
+    execute 'create policy trips_public_read on public.trips for select to public using (true)';
+    execute 'create policy trips_heartbeat_write on public.trips for all to public using (id = ''_heartbeat'') with check (id = ''_heartbeat'')';
+  end if;
+end $$;
+
+-- discovery of family-shared trips (see migrations-2026-10-28d-discover.sql)
+create or replace function public.tb_list_family_trips(p_key text)
+returns table (id text, title text, join_code text)
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
+  if length(coalesce(p_key, '')) < 16 then return; end if;
+  return query select t.id, coalesce(t.data->>'title', t.id), t.join_code from tb_trips t where t.family_key = p_key;
+end $$;
+revoke all on function public.tb_list_family_trips(text) from public, anon;
+grant execute on function public.tb_list_family_trips(text) to authenticated;
+
+-- owner can switch automatic discovery off for a trip (code-only sharing) by clearing the key
+create or replace function public.tb_set_family_key(p_id text, p_key text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'not signed in'; end if;
+  if p_key is not null and length(p_key) < 16 then raise exception 'key too short'; end if;
+  update tb_trips set family_key = p_key
+   where id = p_id
+     and exists (select 1 from tb_trip_members m where m.trip_id = p_id and m.user_id = auth.uid() and m.role = 'owner');
+end $$;
+revoke all on function public.tb_set_family_key(text, text) from public, anon;
+grant execute on function public.tb_set_family_key(text, text) to authenticated;

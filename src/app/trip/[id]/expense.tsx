@@ -6,6 +6,7 @@ import { Alert, Pressable, ScrollView, TextInput, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { Avatar, Button, Icon, Pill, Row, SectionTitle, Txt } from '@/components/ui';
+import { guessCategory, QUICK_EXPENSES } from '@/lib/categorize';
 import { useFx } from '@/lib/fx';
 import { importToVault, localFile } from '@/lib/files';
 import { success } from '@/lib/haptics';
@@ -20,7 +21,7 @@ import { CATEGORY_META } from '@/theme/categories';
 import type { ExpenseCategory } from '@/types/trip';
 
 export default function ExpenseEditor() {
-  const { id, eid } = useLocalSearchParams<{ id: string; eid?: string }>();
+  const { id, eid, title: preTitle, amountInr: preAmount, cat: preCat } = useLocalSearchParams<{ id: string; eid?: string; title?: string; amountInr?: string; cat?: string }>();
   const trip = useTrip(id)!;
   const me = useMe(trip);
   const existing = useLedger((s) => (eid ? s.expenses[eid] : undefined));
@@ -28,11 +29,14 @@ export default function ExpenseEditor() {
   const remove = useLedger((s) => s.remove);
   const fx = useFx(trip.currency);
 
-  const [currency, setCurrency] = useState(existing?.currency ?? trip.currency.code);
+  const [currency, setCurrency] = useState(existing?.currency ?? (preAmount ? 'INR' : trip.currency.code));
   const cur = currency === 'INR' ? INR : trip.currency;
-  const [title, setTitle] = useState(existing?.title ?? '');
-  const [amount, setAmount] = useState(existing ? String(fromMinor(existing.amountMinor, cur)) : '');
-  const [category, setCategory] = useState<ExpenseCategory>(existing?.category ?? 'food');
+  const [title, setTitle] = useState(existing?.title ?? preTitle ?? '');
+  const [amount, setAmount] = useState(existing ? String(fromMinor(existing.amountMinor, cur)) : (preAmount ?? ''));
+  const [category, setCategory] = useState<ExpenseCategory>(existing?.category ?? (preCat as ExpenseCategory) ?? 'food');
+  // true once the user picks a category by hand — after that we stop auto-guessing from the title
+  const [categoryTouched, setCategoryTouched] = useState(Boolean(existing || preCat));
+  const [autoCat, setAutoCat] = useState(false);
   const [paidBy, setPaidBy] = useState(existing?.paidBy ?? me?.id ?? trip.travelers[0].id);
   const [splitWith, setSplitWith] = useState<string[]>(existing?.splitWith ?? trip.travelers.map((t) => t.id));
   const defaultDate = useMemo(() => {
@@ -137,16 +141,46 @@ export default function ExpenseEditor() {
 
       <TextInput
         value={title}
-        onChangeText={setTitle}
+        onChangeText={(v) => {
+          setTitle(v);
+          const g = categoryTouched ? null : guessCategory(v);
+          if (g) {
+            setCategory(g);
+            setAutoCat(true);
+          } else if (!v.trim()) setAutoCat(false);
+        }}
         placeholder="What was it? e.g. Grab to Ba Na Hills"
         placeholderTextColor={colors.textMute}
         style={{ marginTop: space.lg, color: colors.text, fontSize: 17, padding: space.md, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border }}
       />
 
-      <SectionTitle title="Category" />
+      {!existing && !title && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm, marginTop: space.sm }}>
+          {QUICK_EXPENSES.map((q) => (
+            <Pill
+              key={q.title}
+              small
+              label={q.title}
+              icon={CATEGORY_META[q.category].icon}
+              color={CATEGORY_META[q.category].color}
+              onPress={() => {
+                setTitle(q.title);
+                setCategory(q.category);
+                setAutoCat(true);
+              }}
+            />
+          ))}
+        </ScrollView>
+      )}
+
+      <SectionTitle title={autoCat && !categoryTouched ? `Category · auto-detected` : 'Category'} />
       <Row style={{ flexWrap: 'wrap' }}>
         {(Object.keys(CATEGORY_META) as ExpenseCategory[]).map((c) => (
-          <Pill key={c} label={CATEGORY_META[c].label} icon={CATEGORY_META[c].icon} color={CATEGORY_META[c].color} active={category === c} onPress={() => setCategory(c)} />
+          <Pill key={c} label={CATEGORY_META[c].label} icon={CATEGORY_META[c].icon} color={CATEGORY_META[c].color} active={category === c} onPress={() => {
+              setCategory(c);
+              setCategoryTouched(true);
+              setAutoCat(false);
+            }} />
         ))}
       </Row>
 

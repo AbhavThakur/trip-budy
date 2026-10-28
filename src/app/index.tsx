@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,6 +10,7 @@ import { JoinedStack } from '@/components/identity';
 import { Icon, IconButton, Ring, Row, Txt } from '@/components/ui';
 import { dateRange, daysUntil, tripPhase } from '@/lib/time';
 import { useReadiness } from '@/lib/trip';
+import { useSyncRefresh } from '@/lib/use-sync-refresh';
 import { isTestApp } from '@/lib/variant';
 import { useSession } from '@/store/session';
 import { useTrips } from '@/store/trips';
@@ -22,6 +23,7 @@ const phaseRank = { active: 0, upcoming: 1, completed: 2 } as const;
 
 export default function Home() {
   const insets = useSafeAreaInsets();
+  const refreshControl = useSyncRefresh();
   const { width, height } = useWindowDimensions();
   const order = useTrips((s) => s.order);
   const trips = useTrips((s) => s.trips);
@@ -48,7 +50,10 @@ export default function Home() {
   ];
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top + space.md }}>
+    <ScrollView
+      refreshControl={refreshControl}
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      contentContainerStyle={{ flexGrow: 1, paddingTop: insets.top + space.md }}>
       <Row style={{ paddingHorizontal: space.xl, justifyContent: 'space-between' }}>
         <View>
           <Txt v="tiny" color={isTestApp ? colors.rose : colors.gold}>
@@ -81,9 +86,9 @@ export default function Home() {
       />
       <View style={{ flex: 1 }} />
       <Txt v="small" color={colors.textMute} style={{ textAlign: 'center', marginBottom: insets.bottom + space.lg }}>
-        Swipe to switch trips · works fully offline
+        Swipe to switch trips · pull down to sync · works fully offline
       </Txt>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -105,6 +110,7 @@ function Tilt({ index, step, scrollX, children }: { index: number; step: number;
 function PassportCard({ trip, width }: { trip: Trip; width: number }) {
   const ready = useReadiness(trip);
   const shared = useSession((s) => Boolean(s.joinCodes[trip.id]));
+  const syncing = useSession((s) => s.sync.status === 'syncing');
   const phase = tripPhase(trip);
   const d = daysUntil(trip.startDate);
   const status = phase === 'active' ? 'On the road now' : phase === 'completed' ? 'Completed' : d === 1 ? 'Takeoff tomorrow' : `${d} days to takeoff`;
@@ -149,7 +155,7 @@ function PassportCard({ trip, width }: { trip: Trip; width: number }) {
             </Txt>
             <JoinedStack trip={trip} />
             <Txt v="small" color={colors.textDim}>
-              {trip.travelers.length} travelers{shared ? '' : ' · tap to invite'}
+              {trip.travelers.length} travelers{shared ? '' : syncing ? ' · connecting…' : ' · not shared yet'}
             </Txt>
           </View>
           <Pressable onPress={() => router.push(`/trip/${trip.id}/readiness`)} hitSlop={8}>
