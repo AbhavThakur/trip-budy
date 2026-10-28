@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Linking, Switch, View } from 'react-native';
+import { Alert, Linking, Switch, View } from 'react-native';
 
 import { Screen } from '@/components/screen';
 import { VoiceCheck } from '@/components/speech';
@@ -10,7 +10,7 @@ import { cloudConfigured } from '@/lib/supabase';
 import { otaInfo, useOta } from '@/lib/updates';
 import { notificationsGranted, requestNotifications, rescheduleReminders, sendTestNotification, upcomingReminders } from '@/lib/notify';
 import { REMINDER_KINDS, type Reminder } from '@/lib/reminders';
-import { syncNow } from '@/sync/engine';
+import { removeTrip, syncNow } from '@/sync/engine';
 import { useLedger } from '@/store/ledger';
 import { useSession } from '@/store/session';
 import { useTrips } from '@/store/trips';
@@ -80,6 +80,42 @@ export default function Settings() {
       })}
 
       <RemindersCard />
+
+      <SectionTitle title="Your trips" />
+      <Card>
+        {order.map((id) => {
+          const t = trips[id];
+          if (!t) return null;
+          const owner = useSession.getState().members[id]?.find((m) => m.isMe)?.role === 'owner' && Boolean(codes[id]);
+          return (
+            <Row key={id} style={{ paddingVertical: space.sm }}>
+              <Txt style={{ fontSize: 22 }}>{t.flag}</Txt>
+              <View style={{ flex: 1 }}>
+                <Txt v="h3">{t.title}</Txt>
+                <Txt v="small" color={colors.textMute}>
+                  {codes[id] ? (owner ? 'You own this shared trip' : 'Shared with you') : 'Only on this phone'}
+                </Txt>
+              </View>
+              <Pill
+                small
+                icon="trash"
+                label={owner ? 'Delete' : 'Remove'}
+                color={colors.rose}
+                onPress={() =>
+                  Alert.alert(
+                    owner ? `Delete “${t.title}” for everyone?` : `Remove “${t.title}” from this phone?`,
+                    owner ? 'The trip, expenses and files are deleted from every family phone. This cannot be undone.' : 'Other people keep their copy. You can rejoin later with the code.',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      { text: owner ? 'Delete' : 'Remove', style: 'destructive', onPress: () => removeTrip(id).catch((e) => Alert.alert('Could not do that', e instanceof Error ? e.message : String(e))) },
+                    ],
+                  )
+                }
+              />
+            </Row>
+          );
+        })}
+      </Card>
 
       <SectionTitle title="Comfort & privacy" />
       <Card>

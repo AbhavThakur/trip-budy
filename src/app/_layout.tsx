@@ -39,6 +39,8 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="settings" />
           <Stack.Screen name="join" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="new-trip" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="import-trip" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
           <Stack.Screen name="trip/[id]" />
         </Stack>
         <UpdateGate />

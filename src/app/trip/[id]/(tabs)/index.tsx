@@ -3,15 +3,16 @@ import { useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AddStopSheet } from '@/components/add-stop';
 import { DayHeader, DayPills, NowNextHud, StopRow, useNow } from '@/components/timeline';
 import { JoinedStack, MeChip, useJoinStates, useOpenWhoAmI } from '@/components/identity';
 import { SyncLine } from '@/components/sync-dot';
-import { Card, IconButton, Ring, Row, Txt } from '@/components/ui';
+import { Card, IconButton, Pill, Ring, Row, Txt } from '@/components/ui';
 import { clockIn, nowAndNext, stopsForDay, todayIn, tripPhase } from '@/lib/time';
 import { shareDay, useReadiness } from '@/lib/trip';
 import { useTripId } from '@/lib/trip-context';
 import { useSyncRefresh } from '@/lib/use-sync-refresh';
-import { useTrip } from '@/store/trips';
+import { bundledById, useTrip, useTrips } from '@/store/trips';
 import { colors, space } from '@/theme';
 
 export default function Expedition() {
@@ -35,6 +36,11 @@ export default function Expedition() {
   const away = trip.timezone !== trip.homeTimezone;
   const phase = tripPhase(trip, now);
   const openWho = useOpenWhoAmI();
+  const [adding, setAdding] = useState(false);
+  // bundled trips are rebuilt from the app on every update, so hand edits only stick on trips made in the app
+  const editable = !bundledById()[trip.id];
+  const deleteStop = (stopId: string) =>
+    useTrips.getState().editTrip(trip.id, (t) => ({ ...t, days: t.days.map((d) => ({ ...d, stops: d.stops.filter((x) => x.id !== stopId) })) }));
   const states = useJoinStates(trip);
   const joined = Object.values(states).filter((s) => s !== 'not-joined').length;
 
@@ -103,9 +109,15 @@ export default function Expedition() {
             Nothing scheduled yet.
           </Txt>
         ) : (
-          stops.map((s, i) => <StopRow key={s.id} trip={trip} stop={s} last={i === stops.length - 1} isNow={s.id === nowStopId} />)
+          stops.map((s, i) => <StopRow key={s.id} trip={trip} stop={s} last={i === stops.length - 1} isNow={s.id === nowStopId} onDelete={() => deleteStop(s.id)} />)
+        )}
+        {editable && (
+          <View style={{ alignSelf: 'flex-start', marginTop: space.sm }}>
+            <Pill icon="add" label="Add a stop" onPress={() => setAdding(true)} />
+          </View>
         )}
       </View>
+      {editable && <AddStopSheet trip={trip} day={day} visible={adding} onClose={() => setAdding(false)} />}
     </ScrollView>
   );
 }

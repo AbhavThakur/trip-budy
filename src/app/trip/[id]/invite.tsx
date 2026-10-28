@@ -1,7 +1,7 @@
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Linking, Share, View } from 'react-native';
+import { Alert, Linking, Share, Switch, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 import { useJoinStates } from '@/components/identity';
@@ -10,7 +10,7 @@ import { Avatar, Button, Card, Icon, Pill, Row, SectionTitle, Txt } from '@/comp
 import { success } from '@/lib/haptics';
 import { cloudConfigured } from '@/lib/supabase';
 import { joinLink } from '@/lib/variant';
-import { shareTrip } from '@/sync/engine';
+import { familySyncAvailable, setDiscoverable, shareTrip } from '@/sync/engine';
 import { useSession } from '@/store/session';
 import { useTrip } from '@/store/trips';
 import { colors, font, radius, space } from '@/theme';
@@ -21,6 +21,8 @@ export default function Invite() {
   const code = useSession((s) => s.joinCodes[trip.id]);
   const states = useJoinStates(trip);
   const [busy, setBusy] = useState(false);
+  const isOwner = useSession((s) => s.members[trip.id]?.find((m) => m.isMe)?.role === 'owner');
+  const codeOnly = useSession((s) => Boolean(s.codeOnly[trip.id]));
   const joined = trip.travelers.filter((t) => states[t.id] !== 'not-joined');
   const pending = trip.travelers.filter((t) => states[t.id] === 'not-joined');
 
@@ -87,6 +89,24 @@ export default function Invite() {
                 success();
               }}
               style={{ flex: 1 }}
+            />
+          </Row>
+        </Card>
+      )}
+
+      {code && isOwner && familySyncAvailable && (
+        <Card style={{ marginTop: space.md }}>
+          <Row>
+            <View style={{ flex: 1 }}>
+              <Txt v="h3">Show up on family phones</Txt>
+              <Txt v="small" color={colors.textDim}>
+                {codeOnly ? 'Off — only people who enter the code can join.' : 'On — family phones with the app get this trip automatically.'}
+              </Txt>
+            </View>
+            <Switch
+              value={!codeOnly}
+              onValueChange={(on) => setDiscoverable(trip.id, on).catch((e) => Alert.alert('Could not change that', e instanceof Error ? e.message : String(e)))}
+              trackColor={{ true: colors.gold }}
             />
           </Row>
         </Card>

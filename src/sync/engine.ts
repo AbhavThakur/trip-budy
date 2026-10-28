@@ -25,6 +25,7 @@ const channels = new Map<ID, RealtimeChannel>();
 
 /** Shared by every family phone (EAS env). Lets a phone join any trip its app already contains — no code to type. */
 const FAMILY_KEY = process.env.EXPO_PUBLIC_FAMILY_KEY?.trim();
+export const familySyncAvailable = Boolean(FAMILY_KEY);
 /** Optional "tripId:CODE,tripId:CODE" fallback that needs no server migration. */
 const TRIP_CODES: Record<string, string> = Object.fromEntries(
   (process.env.EXPO_PUBLIC_TRIP_CODES ?? '')
@@ -343,6 +344,7 @@ export async function joinTrip(code: string, travelerId: ID | null): Promise<Tri
   const { data, error } = await supabase.rpc('tb_join_trip', { p_code: code, p_traveler: travelerId });
   if (error) throw error;
   const row = (data as Linked[])[0];
+  useSession.setState((st) => ({ hiddenTrips: st.hiddenTrips.filter((x) => x !== row.id) }));
   adoptCloudTrip(row);
   await syncNow();
   return useTrips.getState().trips[row.id];
@@ -405,6 +407,9 @@ export async function removeTrip(tripId: ID) {
   if (supabase && owner && session.joinCodes[tripId]) {
     const { error } = await supabase.from('tb_trips').delete().eq('id', tripId);
     if (error) throw error;
+    // best effort: uploaded files are not removed by the row delete
+    const files = await supabase.storage.from(DOCS_BUCKET).list(tripId, { limit: 1000 });
+    if (files.data?.length) await supabase.storage.from(DOCS_BUCKET).remove(files.data.map((f) => `${tripId}/${f.name}`));
   }
   session.hideTrip(tripId);
   session.setJoinCode(tripId, undefined);

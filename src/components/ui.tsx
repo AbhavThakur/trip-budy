@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import type { ComponentProps, ReactNode } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type TextProps, type TextStyle, type ViewStyle } from 'react-native';
+import { useEffect, useState, type ComponentProps, type ReactNode } from 'react';
+import { Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type TextProps, type TextStyle, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 
@@ -231,10 +231,20 @@ export function Empty({ icon, title, body }: { icon: IconName; title: string; bo
 /** Lightweight bottom sheet (native Modal; no extra native dependency). */
 export function Sheet({ visible, onClose, title, children }: { visible: boolean; onClose: () => void; title?: string; children: ReactNode }) {
   const insets = useSafeAreaInsets();
+  // the modal is edge-to-edge, so the system does not lift it above the keyboard
+  const [kb, setKb] = useState(0);
+  useEffect(() => {
+    const a = Keyboard.addListener('keyboardDidShow', (e) => setKb(e.endCoordinates.height));
+    const b = Keyboard.addListener('keyboardDidHide', () => setKb(0));
+    return () => {
+      a.remove();
+      b.remove();
+    };
+  }, []);
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent navigationBarTranslucent>
       <Pressable style={styles.backdrop} onPress={onClose} />
-      <View style={[styles.sheet, { paddingBottom: insets.bottom + space.lg }]}>
+      <View style={[styles.sheet, { paddingBottom: insets.bottom + kb + space.lg }]}>
         <View style={styles.grabber} />
         {title && (
           <Row style={{ justifyContent: 'space-between', marginBottom: space.md }}>

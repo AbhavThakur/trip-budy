@@ -113,3 +113,15 @@ export function nowAndNext(trip: Trip, at = new Date()): NowNext {
 }
 
 export const flightDuration = (f: Flight) => durationLabel(Date.parse(f.arrive) - Date.parse(f.depart));
+
+/** "2027-01-03" + "09:30" in a time zone → ISO string carrying that zone's UTC offset (the format the trip data uses). */
+export function zonedIso(ymd: string, hhmm: string, timeZone: string) {
+  const guess = Date.parse(`${ymd}T${hhmm}:00Z`);
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).formatToParts(new Date(guess));
+  const g = (t: string) => Number(parts.find((p) => p.type === t)!.value);
+  const asLocal = Date.UTC(g('year'), g('month') - 1, g('day'), g('hour'), g('minute'));
+  const offMin = Math.round((asLocal - guess) / 60000);
+  const sign = offMin < 0 ? '-' : '+';
+  const abs = Math.abs(offMin);
+  return `${ymd}T${hhmm}:00${sign}${String(Math.floor(abs / 60)).padStart(2, '0')}:${String(abs % 60).padStart(2, '0')}`;
+}

@@ -153,6 +153,14 @@ export function buildTrip(i: NewTripInput, now = Date.now()): Trip {
 
 /** Light structural check for a pasted/imported trip document; fills optional arrays so the UI never crashes. */
 export function normalizeImportedTrip(raw: unknown): { trip?: Trip; error?: string } {
+  try {
+    return normalizeUnsafe(raw);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Could not read that trip.' };
+  }
+}
+
+function normalizeUnsafe(raw: unknown): { trip?: Trip; error?: string } {
   if (!raw || typeof raw !== 'object') return { error: 'That is not a JSON object.' };
   const t = raw as Record<string, unknown>;
   for (const k of ['id', 'title', 'startDate', 'endDate', 'timezone', 'currency', 'travelers', 'days'])
@@ -164,16 +172,48 @@ export function normalizeImportedTrip(raw: unknown): { trip?: Trip; error?: stri
   const cur = t.currency as Record<string, unknown>;
   if (!cur || typeof cur.code !== 'string' || typeof cur.inrPerUnit !== 'number') return { error: '"currency" needs code, symbol, decimals and inrPerUnit.' };
   const ids = new Set<string>();
-  for (const p of t.travelers as { id?: string; name?: string }[]) {
-    if (!p?.id || !p?.name) return { error: 'Every traveler needs an "id" and a "name".' };
-    ids.add(p.id);
-  }
-  for (const d of t.days as { index?: number; date?: string; stops?: unknown[] }[]) {
-    if (typeof d?.index !== 'number' || !d?.date || !isYmd(d.date)) return { error: 'Every day needs "index" and a valid "date".' };
+  (t.travelers as Record<string, unknown>[]).forEach((p, k) => {
+    if (!p?.id || !p?.name) throw new Error('Every traveler needs an "id" and a "name".');
+    p.shortName ??= String(p.name).split(' ')[0];
+    p.color ??= PALETTE[k % PALETTE.length];
+    ids.add(String(p.id));
+  });
+  for (const d of t.days as { index?: number; date?: string; title?: string; stops?: Record<string, unknown>[] }[]) {
+    if (typeof d?.index !== 'number' || !d?.date || !isYmd(d.date)) throw new Error('Every day needs "index" and a valid "date".');
+    d.title ??= `Day ${d.index}`;
     if (!Array.isArray(d.stops)) d.stops = [];
+    for (const st of d.stops) {
+      if (!st?.id || !st?.title) throw new Error(`A stop on day ${d.index} needs an "id" and a "title".`);
+      st.category ??= 'activity';
+    }
   }
-  for (const f of (t.flights as { bookings?: { travelerIds?: string[] }[] }[]) ?? [])
-    for (const b of f.bookings ?? []) for (const x of b.travelerIds ?? []) if (!ids.has(x)) return { error: `A flight booking mentions unknown traveler "${x}".` };
+  const arr = (k: string) => {
+    if (t[k] != null && !Array.isArray(t[k])) throw new Error(`"${k}" must be a list.`);
+    return (t[k] as Record<string, unknown>[] | undefined) ?? [];
+  };
+  for (const f of arr('flights')) {
+    if (!f.id || !f.depart || !f.arrive || !(f.from as { code?: string })?.code || !(f.to as { code?: string })?.code) throw new Error('Every flight needs id, from.code, to.code, depart and arrive.');
+    f.bookings ??= [];
+    f.cabinKg ??= 7;
+    f.checkinKg ??= 15;
+    f.status ??= 'verify';
+    for (const b of f.bookings as { travelerIds?: string[] }[]) for (const x of b.travelerIds ?? []) if (!ids.has(x)) throw new Error(`A flight booking mentions unknown traveler "${x}".`);
+  }
+  for (const h of arr('stays')) {
+    if (!h.id || !h.name || !h.checkIn || !h.checkOut) throw new Error('Every stay needs id, name, checkIn and checkOut.');
+    h.kind ??= 'hotel';
+    h.rooms ??= [];
+    h.address ??= '';
+    h.city ??= '';
+    h.lat ??= 0;
+    h.lng ??= 0;
+    h.status ??= 'verify';
+  }
+  for (const e of arr('emergency')) {
+    e.status ??= 'verify';
+    e.kind ??= 'other';
+    e.id ??= `e-${String(e.label)}`;
+  }
   const trip = {
     schemaVersion: 1,
     subtitle: '',

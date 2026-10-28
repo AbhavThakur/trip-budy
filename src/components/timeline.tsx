@@ -156,7 +156,7 @@ export function DayPills({ days, selected, onSelect }: { days: Day[]; selected: 
   );
 }
 
-export function StopRow({ trip, stop, last, isNow }: { trip: Trip; stop: Stop; last: boolean; isNow: boolean }) {
+export function StopRow({ trip, stop, last, isNow, onDelete }: { trip: Trip; stop: Stop; last: boolean; isNow: boolean; onDelete?: () => void }) {
   const [open, setOpen] = useState(false);
   const c = categoryStyle[stop.category];
   const flight = stop.ref?.type === 'flight' ? trip.flights.find((f) => f.id === stop.ref!.id) : undefined;
@@ -246,6 +246,7 @@ export function StopRow({ trip, stop, last, isNow }: { trip: Trip; stop: Stop; l
                     }
                   />
                 )}
+                {onDelete && stop.id.startsWith('u-') && <Pill small icon="trash" label="Delete" color={colors.rose} onPress={onDelete} />}
                 {flight && <Pill small icon="airplane" label="Flight details" color={colors.sky} onPress={() => router.push(`/trip/${trip.id}/flights`)} />}
                 {stay && <Pill small icon="bed" label="Booking" color={colors.sky} onPress={() => router.push(`/trip/${trip.id}/stays`)} />}
               </Row>

@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { SyncDot } from '@/components/sync-dot';
 import { JoinedStack } from '@/components/identity';
-import { Icon, IconButton, Ring, Row, Txt } from '@/components/ui';
+import { Button, Icon, IconButton, Ring, Row, Txt } from '@/components/ui';
 import { dateRange, daysUntil, tripPhase } from '@/lib/time';
 import { useReadiness } from '@/lib/trip';
 import { useSyncRefresh } from '@/lib/use-sync-refresh';
@@ -183,15 +183,19 @@ function PassportCard({ trip, width }: { trip: Trip; width: number }) {
 
 function AddCard({ width }: { width: number }) {
   return (
-    <Pressable onPress={() => router.push('/join')} style={[s.add, { width, height: width * 1.42 }]}>
+    <View style={[s.add, { width, height: width * 1.42 }]}>
       <View style={s.addIcon}>
         <Icon name="add" size={36} color={colors.gold} />
       </View>
-      <Txt v="h2">Join a trip</Txt>
+      <Txt v="h2">Add a trip</Txt>
       <Txt v="small" color={colors.textDim} style={{ textAlign: 'center', paddingHorizontal: space.xl }}>
-        Enter the 6-letter family code to sync a trip onto this phone.
+        Planning somewhere new, or got a family code?
       </Txt>
-    </Pressable>
+      <View style={{ gap: space.sm, alignSelf: 'stretch', paddingHorizontal: space.xl }}>
+        <Button label="New trip" icon="airplane" onPress={() => router.push('/new-trip')} />
+        <Button label="Join with code" icon="enter" kind="ghost" onPress={() => router.push('/join')} />
+      </View>
+    </View>
   );
 }
 

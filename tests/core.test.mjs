@@ -233,3 +233,11 @@ test('imported trip JSON is validated and defaulted', () => {
   assert.match(normalizeImportedTrip(bad).error, /ghost/);
   assert.ok(normalizeImportedTrip(JSON.parse(JSON.stringify(vietnam))).trip, 'the shipped Vietnam trip is itself importable');
 });
+
+import { zonedIso } from '../src/lib/time.ts';
+test('zonedIso carries the destination UTC offset', () => {
+  assert.equal(zonedIso('2027-01-03', '09:30', 'Asia/Bangkok'), '2027-01-03T09:30:00+07:00');
+  assert.equal(zonedIso('2027-01-03', '09:30', 'Asia/Kolkata'), '2027-01-03T09:30:00+05:30');
+  assert.equal(zonedIso('2027-07-01', '09:30', 'Europe/London'), '2027-07-01T09:30:00+01:00');
+  assert.equal(zonedIso('2027-01-03', '23:15', 'America/New_York'), '2027-01-03T23:15:00-05:00');
+});
