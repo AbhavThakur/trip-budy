@@ -71,6 +71,10 @@ Phones download it in the background and show **“Trip update ready”**; one t
 Only native changes (new native library, permissions, app.json plugins) or bumping `version` in app.json need a new APK.
 Supabase keys for OTA bundles come from EAS environment variables (`production`), already created from `.env`.
 
+## Shopping guide
+
+Each trip can carry a `shopping` guide (items by category with where and when to buy, plus customs, VAT-refund and bargaining notes). It is written in `scripts/seed/vietnam.core.mjs`, shown from **Vault → Shopping guide** and as a "Shop today" chip on matching days, and ships by OTA. "Picked up" ticks sync between phones.
+
 ## Future trips
 
 No rebuild and no developer needed:

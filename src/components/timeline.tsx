@@ -314,7 +314,7 @@ export function DayHeader({ trip, day, onShare }: { trip: Trip; day: Day; onShar
             Shop today: {dayShop.slice(0, 3).map((i) => i.title.replace(/ \(.*\)$/, '')).join(' · ')}{dayShop.length > 3 ? ` +${dayShop.length - 3} more` : ''}
           </Txt>
           <Txt v="small" color={shopLeft ? colors.violet : colors.emerald} style={{ fontWeight: '700' }}>
-            {shopLeft ? `${shopLeft} to find` : 'Done'}
+            {shopLeft ? `${shopLeft} ideas` : 'All picked'}
           </Txt>
           <Icon name="chevron-forward" size={14} color={colors.textDim} />
         </Pressable>
