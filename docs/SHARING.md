@@ -37,3 +37,12 @@ Any app installed outside the Play Store shows Android's "unknown app" prompts. 
 
 ## Check the file before sharing
 `shasum -a 256 dist-apk/trip-buddy.apk` — send the first 8 characters so family can confirm the file wasn't changed (Files app → file details, or any hash app).
+
+
+## Decision: Drive or EAS link?
+
+Use the **already-built signed APK** (`dist-apk/trip-buddy.apk`, versionCode 2) from a **personal Gmail Drive (Restricted, add each person)** or WhatsApp. No new build is needed: everything since that build is JavaScript and ships by OTA (`npm run ship`).
+
+Switch to an EAS link only if Drive keeps blocking people. Then use `npx eas-cli build -p android --profile production` (not `preview`: the EAS `preview` environment carries the test-app trip code), and expect everyone who already installed the Drive APK to uninstall once, because EAS signs with a different key than `~/.trip-buddy/release.keystore`.
+
+Build a new APK only for native changes (new native library, permissions, app.json plugins) or a `version` bump.

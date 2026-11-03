@@ -241,3 +241,18 @@ test('zonedIso carries the destination UTC offset', () => {
   assert.equal(zonedIso('2027-07-01', '09:30', 'Europe/London'), '2027-07-01T09:30:00+01:00');
   assert.equal(zonedIso('2027-01-03', '23:15', 'America/New_York'), '2027-01-03T23:15:00-05:00');
 });
+
+test('Vietnam shopping guide is complete and consistent', () => {
+  const g = vietnam.shopping;
+  assert.ok(g && g.items.length >= 8 && g.rules.length >= 3);
+  const ids = g.items.map((i) => i.id);
+  assert.equal(new Set(ids).size, ids.length, 'unique item ids');
+  const days = new Set(vietnam.days.map((d) => d.index));
+  for (const i of g.items) {
+    assert.ok(['coffee', 'food', 'clothing', 'fashion', 'decor', 'gifts', 'beauty', 'electronics'].includes(i.category), i.id);
+    assert.ok(i.spots.length > 0 && i.why, i.id);
+    for (const s of i.spots) if (s.dayIndex != null) assert.ok(days.has(s.dayIndex), `${i.id} day ${s.dayIndex}`);
+  }
+  for (const cat of ['coffee', 'food', 'clothing', 'fashion', 'decor', 'gifts', 'beauty', 'electronics']) assert.ok(g.items.some((i) => i.category === cat), cat);
+  assert.ok(normalizeImportedTrip(JSON.parse(JSON.stringify(vietnam))).trip.shopping, 'shopping survives import');
+});

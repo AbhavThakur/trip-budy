@@ -14,6 +14,8 @@ export function useMe(trip?: Trip): Traveler | undefined {
   return trip.travelers.find((t) => t.id === meId) ?? trip.travelers.find((t) => t.tags?.includes('lead')) ?? trip.travelers[0];
 }
 
+export const shopKey = (tripId: ID, itemId: ID) => checklistKey(tripId, `shop:${itemId}`, '');
+
 export const passKey = (tripId: ID, passId: ID) => checklistKey(tripId, `pass:${passId}`, '');
 
 export const travelerName = (trip: Trip, id: ID) => trip.travelers.find((t) => t.id === id)?.shortName ?? id;

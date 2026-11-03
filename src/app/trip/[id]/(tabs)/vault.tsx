@@ -69,6 +69,19 @@ export default function Vault() {
         ))}
       </View>
 
+      {trip.shopping && (
+        <Pressable onPress={() => router.push(`/trip/${trip.id}/shopping`)} style={({ pressed }) => [{ marginTop: space.sm, padding: space.md, borderRadius: radius.lg, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, flexDirection: 'row', alignItems: 'center', gap: space.md, opacity: pressed ? 0.8 : 1 }]}>
+          <Icon name="bag-handle" color={colors.violet} size={24} />
+          <View style={{ flex: 1 }}>
+            <Txt v="h3">Shopping guide</Txt>
+            <Txt v="small" color={colors.textDim}>
+              {trip.shopping.items.length} things worth buying, where and when · bargaining tips
+            </Txt>
+          </View>
+          <Icon name="chevron-forward" size={16} color={colors.textDim} />
+        </Pressable>
+      )}
+
       <Row style={{ marginTop: space.md }}>
         {sos.map((e) => (
           <Pressable key={e.id} onPress={() => call(e.phone)} style={{ flex: 1, padding: space.md, borderRadius: radius.md, backgroundColor: colors.roseSoft, alignItems: 'center' }}>

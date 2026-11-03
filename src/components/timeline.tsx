@@ -5,7 +5,7 @@ import Animated, { FadeIn, LinearTransition } from 'react-native-reanimated';
 
 import { categoryStyle, colors, radius, space } from '@/theme';
 import { durationLabel, flightDuration, localTime, nowAndNext, shortDate, tripPhase, zonedIso } from '@/lib/time';
-import { openNavigation, passKey } from '@/lib/trip';
+import { openNavigation, passKey, shopKey } from '@/lib/trip';
 import { useLedger } from '@/store/ledger';
 import type { Day, Flight, Stop, Trip } from '@/types/trip';
 
@@ -266,6 +266,8 @@ export function DayHeader({ trip, day, onShare }: { trip: Trip; day: Day; onShar
   const marks = useLedger((st) => st.checklist);
   const dayPasses = (trip.passes ?? []).filter((p) => p.dayIndex === day.index && p.buy !== 'free');
   const toBook = dayPasses.filter((p) => (p.buy === 'online' || p.buy === 'gate') && !marks[passKey(trip.id, p.id)]?.done).length;
+  const dayShop = (trip.shopping?.items ?? []).filter((i) => i.spots.some((sp) => sp.dayIndex === day.index));
+  const shopLeft = dayShop.filter((i) => !marks[shopKey(trip.id, i.id)]?.done).length;
   return (
     <View style={{ paddingHorizontal: space.lg, marginTop: space.lg, marginBottom: space.md }}>
       <Row style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -301,6 +303,18 @@ export function DayHeader({ trip, day, onShare }: { trip: Trip; day: Day; onShar
           </Txt>
           <Txt v="small" color={toBook ? colors.gold : colors.emerald} style={{ fontWeight: '700' }}>
             {toBook ? `${toBook} to book` : 'Tickets'}
+          </Txt>
+          <Icon name="chevron-forward" size={14} color={colors.textDim} />
+        </Pressable>
+      )}
+      {dayShop.length > 0 && (
+        <Pressable onPress={() => router.push(`/trip/${trip.id}/shopping`)} style={{ marginTop: space.sm, padding: space.sm, borderRadius: radius.md, backgroundColor: shopLeft ? colors.violetSoft : colors.surface, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+          <Icon name="bag-handle" size={16} color={colors.violet} />
+          <Txt v="small" style={{ flex: 1 }} numberOfLines={2}>
+            Shop today: {dayShop.slice(0, 3).map((i) => i.title.replace(/ \(.*\)$/, '')).join(' · ')}{dayShop.length > 3 ? ` +${dayShop.length - 3} more` : ''}
+          </Txt>
+          <Txt v="small" color={shopLeft ? colors.violet : colors.emerald} style={{ fontWeight: '700' }}>
+            {shopLeft ? `${shopLeft} to find` : 'Done'}
           </Txt>
           <Icon name="chevron-forward" size={14} color={colors.textDim} />
         </Pressable>

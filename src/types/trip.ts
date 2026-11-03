@@ -241,6 +241,47 @@ export interface Pass {
   status: DataStatus;
 }
 
+export type ShopCategory = 'coffee' | 'food' | 'clothing' | 'fashion' | 'decor' | 'gifts' | 'beauty' | 'electronics';
+
+/** Where to buy something. city "Any" = every city on the trip (supermarkets, chains). */
+export interface ShopSpot {
+  city: string;
+  place: string;
+  note?: string;
+  /** itinerary day that fits best */
+  dayIndex?: number;
+}
+
+export interface ShopItem {
+  id: ID;
+  category: ShopCategory;
+  title: string;
+  /** local-language name to show a shopkeeper */
+  titleLocal?: string;
+  why: string;
+  price?: string;
+  /** safe for vegetarian travelers */
+  veg?: boolean;
+  fragile?: boolean;
+  tip?: string;
+  spots: ShopSpot[];
+  status: DataStatus;
+}
+
+export interface ShopRule {
+  id: ID;
+  kind: 'avoid' | 'bargain' | 'tip';
+  title: string;
+  text: string;
+}
+
+/** Souvenir & shopping guide for the destination. */
+export interface ShopGuide {
+  intro?: string;
+  items: ShopItem[];
+  rules: ShopRule[];
+}
+
 export interface OfflineRegion {
   id: ID;
   name: string;
@@ -275,6 +316,7 @@ export interface Trip {
   pois: Poi[];
   budget: BudgetLine[];
   passes?: Pass[];
+  shopping?: ShopGuide;
   offlineRegions: OfflineRegion[];
   /** human-readable list of things still unverified, surfaced on the readiness screen */
   openQuestions?: string[];

@@ -67,11 +67,19 @@ Any JS / data change (itinerary, phrases, fixes) goes out over the air:
 npm run ship -- "Updated cruise pickup time"
 ```
 
-npx eas-cli build -p android --profile preview
-
 Phones download it in the background and show **“Trip update ready”**; one tap restarts into the new version (Settings → App updates shows the running bundle).
 Only native changes (new native library, permissions, app.json plugins) or bumping `version` in app.json need a new APK.
 Supabase keys for OTA bundles come from EAS environment variables (`production`), already created from `.env`.
+
+## Future trips
+
+No rebuild and no developer needed:
+
+- **Home → swipe to the last card → New trip** (pick a destination, dates, travelers) or **Import** (copy the AI prompt, give an AI your tickets, paste its JSON reply).
+- Add stops on any day with **Add a stop** (trips made in the app are editable; the bundled Vietnam trip is rebuilt from the app on every update).
+- **Invite → Start family sync** shares the trip. With *Show up on family phones* on (default), every phone with the app receives it automatically through the family key; turn it off to share by code only.
+- **Settings → Your trips**: the owner can delete a shared trip for everyone; others can remove it from their own phone only.
+- Seed-file trips (`scripts/seed` + `npm run ship`) remain the path for fully curated trips with PDFs and day tickets.
 
 ## Private data
 
